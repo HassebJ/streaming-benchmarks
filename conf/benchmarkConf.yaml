@@ -2,23 +2,23 @@
 # Licensed under the terms of the Apache License 2.0. Please see LICENSE file in the project root for terms.
 
 kafka.brokers:
-    - "localhost"
+    - "192.168.140.23:9092,192.168.140.24:9092,192.168.140.25:9092,192.168.140.26:9092,192.168.140.27:9092" 
 
 zookeeper.servers:
-    - "localhost"
+    - "192.168.140.23:2181,192.168.140.24:2181,192.168.140.25:2181"
 
 kafka.port: 9092
 zookeeper.port: 2181
-redis.host: "localhost"
+redis.host: "192.168.140.23"
 kafka.topic: "ad-events"
-kafka.partitions: 1
+kafka.partitions: 5
 
-process.hosts: 1
-process.cores: 4
+process.hosts: 10
+process.cores: 16
 
 #STORM Specific
 storm.workers: 1
 storm.ackers: 2
 
 #Spark Specific
-spark.batchtime: 2000
+spark.batchtime: 3000
