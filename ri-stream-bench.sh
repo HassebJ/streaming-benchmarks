@@ -41,7 +41,7 @@ pid_match() {
    echo $VAL
 }
 assign_broker_id(){
-   local BROKERID=`ip -o addr show dev "eth0" | awk '$3 == "inet" {print $4}' | sed -r 's!/.*!!; s!.*\.!!'`
+   local BROKERID=`/sbin/ip -o addr show dev "eth0" | awk '$3 == "inet" {print $4}' | sed -r 's!/.*!!; s!.*\.!!'`
    sed -i -e "s/broker.id=[0-9]*/broker.id=$BROKERID/g"  $KAFKA_DIR/config/server.properties
 }
 start_if_needed() {
@@ -197,7 +197,8 @@ run() {
   then
     assign_broker_id
     start_if_needed kafka\.Kafka Kafka 10 "$KAFKA_DIR/bin/kafka-server-start.sh" "$KAFKA_DIR/config/server.properties"
-    create_kafka_topic
+   sleep 5 
+   create_kafka_topic
   elif [ "STOP_KAFKA" = "$OPERATION" ];
   then
     stop_if_needed kafka\.Kafka Kafka
