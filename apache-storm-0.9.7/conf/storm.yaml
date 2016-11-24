@@ -16,9 +16,9 @@
 
 ########### These MUST be filled in for a storm configuration
  storm.zookeeper.servers:
-     - "192.168.140.23"
-     - "192.168.140.24"
-     - "192.168.140.25"
+     - "192.168.142.23"
+     - "192.168.142.24"
+     - "192.168.142.25"
 # 
  nimbus.host: "nimbus"
 #storm.zookeeper.port: "2181"

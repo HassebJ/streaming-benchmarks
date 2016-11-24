@@ -29,7 +29,7 @@ APACHE_MIRROR=$(curl 'https://www.apache.org/dyn/closer.cgi' |   grep -o '<stron
 
 ZK_HOST="localhost"
 ZK_PORT="2181"
-ZK_CONNECTIONS="192.168.140.23:2181,192.168.140.24:2181,192.168.140.25:2181"
+ZK_CONNECTIONS="192.168.142.23:2181,192.168.142.24:2181,192.168.142.25:2181"
 TOPIC=${TOPIC:-"ad-events"}
 PARTITIONS=${PARTITIONS:-5}
 LOAD=${LOAD:-100000}
@@ -212,8 +212,8 @@ run() {
   elif [ "START_SPARK" = "$OPERATION" ];
   then
 #    start_if_needed org.apache.spark.deploy.master.Master SparkMaster 5 $SPARK_DIR/sbin/start-all.sh
-    start_if_needed org.apache.spark.deploy.master.Master SparkMaster 5 $SPARK_DIR/sbin/start-master.sh -h 192.168.140.23 -p 7077
-    start_if_needed org.apache.spark.deploy.worker.Worker SparkSlave 5 $SPARK_DIR/sbin/start-slaves.sh spark://192.168.140.23:7077
+    start_if_needed org.apache.spark.deploy.master.Master SparkMaster 5 $SPARK_DIR/sbin/start-master.sh -h 192.168.142.23 -p 7077
+    start_if_needed org.apache.spark.deploy.worker.Worker SparkSlave 5 $SPARK_DIR/sbin/start-slaves.sh spark://192.168.142.23:7077
   elif [ "STOP_SPARK" = "$OPERATION" ];
   then
     stop_if_needed org.apache.spark.deploy.master.Master SparkMaster
@@ -241,7 +241,7 @@ run() {
     sleep 10
   elif [ "START_SPARK_PROCESSING" = "$OPERATION" ];
   then
-    "$SPARK_DIR/bin/spark-submit" --master spark://192.168.140.23:7077 --class spark.benchmark.KafkaRedisAdvertisingStream ./spark-benchmarks/target/spark-benchmarks-0.1.0.jar "$CONF_FILE" &
+    "$SPARK_DIR/bin/spark-submit" --master spark://192.168.142.23:7077 --class spark.benchmark.KafkaRedisAdvertisingStream ./spark-benchmarks/target/spark-benchmarks-0.1.0.jar "$CONF_FILE" &
     sleep 5
   elif [ "STOP_SPARK_PROCESSING" = "$OPERATION" ];
   then
