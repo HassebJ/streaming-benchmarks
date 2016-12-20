@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/shared/!svn/ver/46797/shankard/take_spark_release_numbers/spark-basic/spark_release_confs/hadoop
+END
+hdfs-site.xml
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/shared/!svn/ver/46741/shankard/take_spark_release_numbers/spark-basic/spark_release_confs/hadoop/hdfs-site.xml
+END
+core-site.xml
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/shared/!svn/ver/46201/shankard/take_spark_release_numbers/spark-basic/spark_release_confs/hadoop/core-site.xml
+END
+hadoop-env.sh
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/shared/!svn/ver/46136/shankard/take_spark_release_numbers/spark-basic/spark_release_confs/hadoop/hadoop-env.sh
+END
+mapred-site.xml
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/shared/!svn/ver/46788/shankard/take_spark_release_numbers/spark-basic/spark_release_confs/hadoop/mapred-site.xml
+END
+yarn-site.xml
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/shared/!svn/ver/46797/shankard/take_spark_release_numbers/spark-basic/spark_release_confs/hadoop/yarn-site.xml
+END

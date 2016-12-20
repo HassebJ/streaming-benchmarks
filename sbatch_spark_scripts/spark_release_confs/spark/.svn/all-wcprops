@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/shared/!svn/ver/47129/shankard/take_spark_release_numbers/spark-basic/spark_release_confs/spark
+END
+spark-env.sh
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/shared/!svn/ver/47129/shankard/take_spark_release_numbers/spark-basic/spark_release_confs/spark/spark-env.sh
+END
+spark-terasort-1.0-jar-with-dependencies.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/shared/!svn/ver/46160/shankard/take_spark_release_numbers/spark-basic/spark_release_confs/spark/spark-terasort-1.0-jar-with-dependencies.jar
+END
+ohb-spark-1.0_spark1.5.jar
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/shared/!svn/ver/46215/shankard/take_spark_release_numbers/spark-basic/spark_release_confs/spark/ohb-spark-1.0_spark1.5.jar
+END
+spark-defaults.conf
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/shared/!svn/ver/46303/shankard/take_spark_release_numbers/spark-basic/spark_release_confs/spark/spark-defaults.conf
+END
+ohb-spark-1.0.jar
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/shared/!svn/ver/46167/shankard/take_spark_release_numbers/spark-basic/spark_release_confs/spark/ohb-spark-1.0.jar
+END

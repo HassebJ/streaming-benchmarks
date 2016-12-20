@@ -1,0 +1,5 @@
+spark.master	spark://MASTER_REPLACE:7077
+spark.executor.memory	WORKER_MEM_REPLACE
+spark.sql.hive.metastore.rdma.isloatedload      false
+spark.ib.enabled SPARK_IB_ENABLED_REPLACE
+hadoop.ib.enabled HADOOP_IB_ENABLED_REPLACE

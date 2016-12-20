@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+	<!-- Put site-specific property overrides in this file. -->
+<configuration>
+        <property>
+	    <name>dfs.ib.enabled</name>
+	    <value>IB_ENABLED_REPLACE</value>
+        </property>
+	<property>
+	        <name>dfs.namenode.name.dir</name>
+	        <value>file://HADOOP_NAME_DIR_REPLACE</value>
+	</property>
+	<property>
+	        <name>dfs.datanode.data.dir</name>
+	        <!--<value>[RAM_DISK]file:/dev/shm/shankard/hadoopData,[SSD]file:/fusion/shankard/hadoopData,[DISK]file:/mnt/d2/shankard/hadoopData</value>-->
+	        <!--value>[RAM_DISK]file://RAM_HADOOP_REPLACE, [SSD]file://SSD_HADOOP_REPLACE, [DISK]file://DISK_HADOOP_REPLACE</value-->
+	        <value>file://SSD_HADOOP_REPLACE</value>
+	</property>
+	<property>
+	        <name>dfs.rdma.spark.sql</name>
+	        <value>true</value>
+	</property>
+	<property>
+	        <name>dfs.master</name>
+	        <value>MASTER_DFS_REPLACE</value>
+	</property>
+</configuration>

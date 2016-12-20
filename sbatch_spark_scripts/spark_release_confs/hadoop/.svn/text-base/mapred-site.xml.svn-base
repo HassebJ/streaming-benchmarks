@@ -1,0 +1,47 @@
+<configuration>
+ <property>
+ <name>mapreduce.framework.name</name>
+ <value>yarn</value>
+ </property>
+
+    <property>
+        <name>yarn.app.mapreduce.am.env</name>
+        <value>LD_LIBRARY_PATH=HADOOP_HOME_REPLACE/lib/native</value>
+    </property>
+
+    <property>
+        <name>yarn.app.mapreduce.am.command-opts</name>
+        <value>-Xmx1024m -Dhadoop.conf.dir=HADOOP_HOME_REPLACE/etc/hadoop/</value>
+    </property>
+
+<property>
+                <name>mapred.ib.enabled</name>
+                <value>IB_ENABLED_REPLACE</value>
+        </property>
+       <!-- <property>
+                            <name>mapred.rdma.disk.shuffle.enabled</name>
+                <value>true</value>
+        </property>
+        <property>
+                <name>mapreduce.job.maps</name>
+                <value>32</value>
+        </property>
+        <property>
+                <name>mapred.map.inmem.spill</name>
+                <value>true</value>
+        </property> -->
+
+<property>
+                <name>mapred.tasktracker.dns.nameserver</name>
+                <value>ib0</value>
+        </property>
+        <property>
+                <name>mapred.tasktracker.dns.interface</name>
+                <value>ib0</value>
+        </property>
+        <property>
+                <name>mapred.map.inmem.spill</name>
+                <value>true</value>
+        </property>
+
+</configuration>
