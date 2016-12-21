@@ -32,7 +32,7 @@ ZK_PORT="2181"
 ZK_CONNECTIONS="node147:2181,node027:2181,node029:2181"
 TOPIC=${TOPIC:-"ad-events"}
 PARTITIONS=${PARTITIONS:-5}
-LOAD=${LOAD:-16667}
+LOAD=${LOAD:-16000}
 CONF_FILE=./conf/benchmarkConf.yaml
 TEST_TIME=${TEST_TIME:-240}
 
@@ -216,8 +216,8 @@ run() {
   elif [ "START_SPARK" = "$OPERATION" ];
   then
     #start_if_needed org.apache.spark.deploy.master.Master SparkMaster 5 $SPARK_DIR/sbin/start-all.sh
-    start_if_needed org.apache.spark.deploy.master.Master SparkMaster 5 $SPARK_DIR/sbin/start-master.sh -h node003  -p 7077
-    start_if_needed org.apache.spark.deploy.worker.Worker SparkSlave 5 $SPARK_DIR/sbin/start-slaves.sh spark://node003:7077
+    start_if_needed org.apache.spark.deploy.master.Master SparkMaster 5 $SPARK_DIR/sbin/start-master.sh -h MASTER_REPLACE  -p 7077
+    start_if_needed org.apache.spark.deploy.worker.Worker SparkSlave 5 $SPARK_DIR/sbin/start-slaves.sh spark://MASTER_REPLACE:7077
   elif [ "STOP_SPARK" = "$OPERATION" ];
   then
     stop_if_needed org.apache.spark.deploy.master.Master SparkMaster
@@ -245,7 +245,7 @@ run() {
     sleep 10
   elif [ "START_SPARK_PROCESSING" = "$OPERATION" ];
   then
-    "$SPARK_DIR/bin/spark-submit" --master spark://node003:7077  --class spark.benchmark.KafkaRedisAdvertisingStream ./spark-benchmarks/target/spark-benchmarks-0.1.0.jar "$CONF_FILE" &
+    "$SPARK_DIR/bin/spark-submit" --master spark://MASTER_REPLACE:7077  --class spark.benchmark.KafkaRedisAdvertisingStream ./spark-benchmarks/target/spark-benchmarks-0.1.0.jar "$CONF_FILE" &
     sleep 5
   elif [ "STOP_SPARK_PROCESSING" = "$OPERATION" ];
   then

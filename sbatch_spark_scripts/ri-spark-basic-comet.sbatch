@@ -1,5 +1,5 @@
 #/bin/bash
-#set -o xtrace
+set -o xtrace
 #SBATCH --output="spark-basic-comet.%j.%N.out"
 #SBATCH --partition=compute
 #SBATCH --nodes=33
@@ -12,27 +12,17 @@
 
 export WORKDIR=`pwd`
 
-load=$1
-ib_enabled=$2
-# CHANGE HERE : cluster specific
-#--------------------------------
+#this load on 7 nodes produces 100k net
+load=14286
 
-if [ "$ib_enabled" == "y" ];
-then 
-    node_name_suffix="-ib"
-else
-    node_name_suffix=""
-fi
-
-
-WORKER_MEM_SPARK="96g"
+WORKER_MEM_SPARK="10g"
 DAEMON_MEM_SPARK="2g"
 WORKER_CORES_SPARK=`grep "core id" /proc/cpuinfo | wc -l`
 SSD_PATH_BASE=/scratch/
-node_offset=1
+node_offset=2
 num_zk=3
-num_kafka=2
-num_spark=3
+num_kafka=5
+num_spark=10
 num_redis=1
 #--------------------------------
 
@@ -45,25 +35,47 @@ CONF_STORM=$BENCHMARK_HOME/apache-storm-0.9.7/conf
 CONF_FLINK=
 CONF_KAFKA=$BENCHMARK_HOME/kafka_2.10-0.8.2.1/config
 
-rm ~/myhostnames
 
-for ip_addr in `scontrol show hostnames`; do
-    echo $ip_addr$node_name_suffix >> ~/myhostnames 
-done
+reset (){
+    cd $BENCHMARK_HOME
+    rm *.out
+    rm ~/myhostnames
+    rm -rf kafka_2.10-0.8.2.1/
+    rm -rf spark-2.0.2-bin-hadoop2.6/
+    tar -xvf download-cache/spark-2.0.2-bin-hadoop2.6.tgz
+    tar -xvf download-cache/kafka_2.10-0.8.2.1.tgz 
+}
+write_hosts_to_file () {
 
+    ib_enabled=$1
+    
+    if [ "$ib_enabled" == "y" ];
+    then
+        node_name_suffix="-ib"
+    else
+        node_name_suffix=""
+    fi
+
+    for ip_addr in `scontrol show hostnames`; do
+        echo $ip_addr$node_name_suffix >> ~/myhostnames 
+    done
 
 #set master and slave addresses
-if [ ! -f $HOME/myhostnames ]
-then
-  echo "Please create $HOME/myhostnames!"
-  #scontrol show hostnames > $HOME/myhostnames
-  exit 1
-fi
-orig_master=`cat ~/myhostnames | head -1`
-master=$orig_master"$node_name_suffix"
+    if [ ! -f $HOME/myhostnames ]
+    then
+        echo "Please create $HOME/myhostnames!"
+        #scontrol show hostnames > $HOME/myhostnames
+        exit 1
+    fi
+}
 
-echo "got the master's hostname: $master"
+get_master_host () {
 
+    orig_master=`cat ~/myhostnames | head -1`
+    master=$orig_master"$node_name_suffix"
+
+    echo "got the master's hostname: $master"
+}
 #start zk servers
 start_zk () {
 
@@ -71,7 +83,7 @@ start_zk () {
         ssh -t $ip_addr "killall -9 java; cd $BENCHMARK_HOME; nohup ./ri-stream-bench.sh START_ZK"
         echo $ip_addr
     done
-
+    cat $CONF_BENCHMARK/nohup.out
 }
 #start redis
 start_redis () {
@@ -85,13 +97,27 @@ replace_ip () {
 
 #start_kafka
 start_kafka () {
-
+    rm $BENCHMARK_HOME/kafka.log
+    command="./ri-stream-bench.sh START_KAFKA"
     for ip_addr in `cat $CONF_BENCHMARK/kafka`; do
         echo $ip_addr
         replace_ip host.name= $ip_addr $CONF_KAFKA/server.properties
-        ssh -t $ip_addr "cd $BENCHMARK_HOME; ./ri-stream-bench.sh START_KAFKA"  
+        ssh -t $ip_addr "cd $BENCHMARK_HOME; nohup $command >> $BENCHMARK_HOME/kafka.out" 
+        sleep 5
     done
+    cat $BENCHMARK_HOME/kafka.out
 }
+
+check_kafka_running () {
+
+    for ip_addr in `cat $CONF_SPARK/conf/slaves`; do
+        echo $ip_addr
+ #       replace_ip host.name= $ip_addr $CONF_KAFKA/server.properties
+        ssh -t $ip_addr "killall -9 java"
+        ssh -t $ip_addr "ps aux | grep java"
+    done 
+} 
+
 config_zk () {
     rm -rf /tmp/dev-storm-zookeeper 
     let total_zk=$1+num_zk-1
@@ -146,9 +172,14 @@ config_spark () {
 
 #start_spark
 start_spark_cluster () {
+    master=`cat ~/myhostnames | head -1`
+    echo "got the master's hostname: $master"
+    
     cd $BENCHMARK_HOME
     cp $CONF_SPARK_DEFAULT/* $CONF_SPARK/conf/
+    cp $WORKDIR/spark_release_confs/ri-stream-bench.sh $BENCHMARK_HOME
     sed -i "s|MASTER_REPLACE|$master|g" $CONF_SPARK/conf/*
+    sed -i "s|MASTER_REPLACE|$master|g" $BENCHMARK_HOME/ri-stream-bench.sh
     #sed -i "s|JAVA_HOME_REPLACE|$JAVA_HOME|g" $CONF_SPARK/conf/spark-env.sh
     #sed -i "s|CONF_SPARK_REPLACE|$CONF_SPARK|g" $CONF_SPARK/conf/spark-env.sh
     #sed -i "s|CONF_SPARK_REPLACE|$CONF_SPARK|g" $CONF_SPARK/conf/spark-defaults.conf
@@ -174,34 +205,43 @@ start_spark_processing (){
 
 start_data_load () {
     cd $BENCHMARK_HOME
+    rm $BENCHMARK_HOME/load
     replace_ip "LOAD:-" "$load}" $BENCHMARK_HOME/ri-stream-bench.sh                                              
-    let "count=0"
-    while read ip_addr; do                                                     
-        ssh -t $ip_addr "cd $BENCHMARK_HOME; ./ri-stream-bench.sh START_LOAD"   
-        ((count+=17000))
-        echo $ip_addr
-        if [ $count -gt $load ]; 
-        then                                                                   
-            break
-        fi
-    done < $HOME/myhostnames 
+   # let "count=0"
+   # command="./ri-stream-bench.sh START_LOAD"
+   # cat $HOME/myhostnames | tail -7 |  while read ip_addr; do                                                     
+   #     ssh -t $ip_addr "cd $BENCHMARK_HOME; nohup $command >> load.out" 
+   #     ((count+=17000))
+   #     echo $ip_addr >> $BENCHMARK_HOME/load
+   #     if [ $count -gt $1 ]; 
+   #     then                                                                   
+   #         break
+   #     fi
+   # done
+   cat ~/myhostnames | tail -7 > loaders.txt
+    mussh -H loaders.txt -c "cd /home/javed.19/git-pull/finished/streaming-benchmarks; ./ri-stream-bench.sh START_LOAD" -m
+
+
 }
 
 stop_data_load() {
-    cd $BENCHMARK_HOME
-    let "count=0"
-    while read ip_addr; do
-        ssh -t $ip_addr "cd $BENCHMARK_HOME; ./ri-stream-bench.sh STOP_LOAD"   
-        ((count+=17000))
-        echo $ip_addr
-        if [ $count -gt $load ];
-        then
-            break
-        fi
-    done < $HOME/myhostnames
+
+    mussh -H loaders.txt -c "cd /home/javed.19/git-pull/finished/streaming-benchmarks; ./ri-stream-bench.sh STOP_LOAD" -m
+    #cd $BENCHMARK_HOME
+    #let "count=0"
+    #command="./ri-stream-bench.sh STOP_LOAD"
+    #while read ip_addr; do
+    #    ssh -t $ip_addr "cd $BENCHMARK_HOME; nohup $command >> unload.out"
+    #    ((count+=17000))
+    #    echo $ip_addr
+    #    if [ $count -gt $1 ];
+    #    then
+    #        break
+    #    fi
+    #done < $BENCHMARK_HOME/load
 }
 
-run () {
+config_all () {
    node_offset=$(config_spark $node_offset)
    node_offset=$(config_redis $node_offset)
    node_offset=$(config_kafka $node_offset)
@@ -209,12 +249,67 @@ run () {
 
 }
 
-#run
-#start_zk
-#start_redis
-#start_kafka
-start_spark_cluster
-start_spark_processing
-#start_data_load
-#sleep 100
-#stop_data_load
+run() {
+  OPERATION=$1
+  shift
+  if [ "config_all" = "$OPERATION" ];
+  then
+      config_all
+  elif [ "iptof" = "$OPERATION" ];
+  then
+      write_hosts_to_file "$1"
+  elif [ "start_zk" = "$OPERATION" ];
+  then
+      start_zk
+  elif [ "start_redis" = "$OPERATION" ];
+  then
+      start_redis
+  elif [ "start_kafka" = "$OPERATION" ];
+  then
+      start_kafka
+      #check_kafka_running
+  elif [ "start_spark_cluster" = "$OPERATION" ];
+  then
+      start_spark_cluster
+  elif [ "start_spark_processing" = "$OPERATION" ];
+  then
+      start_spark_processing
+  elif [ "load_data" = "$OPERATION" ];
+  then
+      start_data_load $1
+     # sleep $2
+     # stop_data_load $1
+  elif [ "stop_load" = "$OPERATION" ];
+  then
+    stop_data_load $1
+  elif [ "kill_java" = "$OPERATION" ];
+  then
+  check_kafka_running
+  elif [ "reset" = "$OPERATION" ];
+  then
+    reset
+  elif [ "STORM_TEST" = "$OPERATION" ];
+  then
+    run "START_ZK"
+    run "START_REDIS"
+    run "START_KAFKA"
+    run "START_STORM"
+    run "START_STORM_TOPOLOGY"
+    run "START_LOAD"
+    sleep $TEST_TIME
+    run "STOP_LOAD"
+    run "STOP_STORM_TOPOLOGY"
+    run "STOP_STORM"
+    run "STOP_KAFKA"
+    run "STOP_REDIS"
+    run "STOP_ZK"
+  fi
+}
+
+if [ $# -lt 1 ];
+then
+ run "HELP"
+ #reset
+else
+    run "$@"
+fi
