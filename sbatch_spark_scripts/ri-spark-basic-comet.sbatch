@@ -19,7 +19,7 @@ WORKER_MEM_SPARK="10g"
 DAEMON_MEM_SPARK="2g"
 WORKER_CORES_SPARK=`grep "core id" /proc/cpuinfo | wc -l`
 SSD_PATH_BASE=/scratch/
-node_offset=2
+node_offset=1
 num_zk=3
 num_kafka=5
 num_spark=10
@@ -258,7 +258,7 @@ stop_data_load() {
 }
 
 config_all () {
-   node_offset=$(config_spark $node_offset)
+  # node_offset=$(config_spark $node_offset)
    node_offset=$(config_redis $node_offset)
    node_offset=$(config_kafka $node_offset)
    node_offset=$(config_zk $node_offset)
@@ -300,10 +300,13 @@ run() {
     stop_data_load $1
   elif [ "kill_java" = "$OPERATION" ];
   then
-  check_kafka_running
+    check_kafka_running
   elif [ "reset" = "$OPERATION" ];
   then
     reset
+  elif [ "config_kafka_all" = "$OPERATION" ];
+  then
+    config_kafka_all
   elif [ "STORM_TEST" = "$OPERATION" ];
   then
     run "START_ZK"
