@@ -97,15 +97,21 @@ replace_ip () {
 
 #start_kafka
 start_kafka () {
-    rm $BENCHMARK_HOME/kafka.log
+    let "counts=1"
     command="./ri-stream-bench.sh START_KAFKA"
     for ip_addr in `cat $CONF_BENCHMARK/kafka`; do
         echo $ip_addr
-        replace_ip host.name= $ip_addr $CONF_KAFKA/server.properties
-        ssh -t $ip_addr "cd $BENCHMARK_HOME; nohup $command >> $BENCHMARK_HOME/kafka.out" 
+        replace_ip host.name= $ip_addr /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka_2.10-0.8.2.1/config/server.properties
+        ssh -t $ip_addr "cd /home/javed.19/git-pull/$counts/streaming-benchmarks ; nohup $command >> /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka.out" 
+        ((counts+=1))
         sleep 5
     done
-    cat $BENCHMARK_HOME/kafka.out
+
+    let "counts=1"
+    for ip_addr in `cat $CONF_BENCHMARK/kafka`; do
+        cat /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka.out
+        ((counts+=1))
+    done
 }
 
 check_kafka_running () {
@@ -162,6 +168,16 @@ config_kafka () {
 
     ex  $CONF_BENCHMARK/benchmarkConf.yaml -c ":%s/kafka.brokers:\(\n\s*-\s".*"\)*/kafka.brokers:\r $yaml_kafka_connections/g" -c ':wq!' > tmp
     echo $((total_kafka+1))
+}
+
+
+config_kafka_all () {
+    let "counts=1"
+    for ip_addr in `cat $CONF_BENCHMARK/kafka`; do
+        cd /home/javed.19/git-pull/$counts/streaming-benchmarks/sbatch_spark_scripts
+        ./ri-spark-basic-comet.sbatch config_all
+        ((counts+=1))
+    done
 }
 
 config_spark () {
