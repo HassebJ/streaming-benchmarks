@@ -42,9 +42,16 @@ reset (){
     rm ~/myhostnames
     rm -rf kafka_2.10-0.8.2.1/
     rm -rf spark-2.0.2-bin-hadoop2.6/
+    rm -rf apache-storm-0.9.7/
     tar -xvf download-cache/spark-2.0.2-bin-hadoop2.6.tgz
     tar -xvf download-cache/kafka_2.10-0.8.2.1.tgz 
+    tar -xvf download-cache/apache-storm-0.9.7.tgz
+
 }
+reset_all () {
+    execute_all "cd sbatch_spark_scripts; ./ri-spark-basic-comet.sbatch reset;"
+}
+
 write_hosts_to_file () {
 
     ib_enabled=$1
@@ -83,7 +90,7 @@ start_zk () {
         ssh -t $ip_addr "killall -9 java; cd $BENCHMARK_HOME; nohup ./ri-stream-bench.sh START_ZK"
         echo $ip_addr
     done
-    cat $CONF_BENCHMARK/nohup.out
+    cat $CONF_BENCHMARK/../nohup.out
 }
 #start redis
 start_redis () {
@@ -265,6 +272,18 @@ config_all () {
 
 }
 
+execute_all () {
+
+    let "counts=1"
+    while [ $counts -lt 6 ]; do
+        cd /home/javed.19/git-pull/$counts/streaming-benchmarks
+        $1
+        ((counts+=1))
+    done
+
+}
+
+
 run() {
   OPERATION=$1
   shift
@@ -307,6 +326,12 @@ run() {
   elif [ "config_kafka_all" = "$OPERATION" ];
   then
     config_kafka_all
+  elif [ "reset_all" = "$OPERATION" ];
+  then
+    reset_all
+  elif [ "execute_all" = "$OPERATION" ];
+  then
+    execute_all "$1"
   elif [ "STORM_TEST" = "$OPERATION" ];
   then
     run "START_ZK"
