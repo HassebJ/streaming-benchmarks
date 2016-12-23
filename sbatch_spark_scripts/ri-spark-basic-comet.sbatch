@@ -45,7 +45,7 @@ reset (){
     rm -rf apache-storm-0.9.7/
     tar -xvf download-cache/spark-2.0.2-bin-hadoop2.6.tgz
     tar -xvf download-cache/kafka_2.10-0.8.2.1.tgz 
-    tar -xvf download-cache/apache-storm-0.9.7.tgz
+    tar -xvf download-cache/apache-storm-0.9.7.tar.gz
 
 }
 reset_all () {
