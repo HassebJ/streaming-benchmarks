@@ -5,7 +5,7 @@ set -o pipefail
 set -o errtrace
 set -o nounset
 set -o errexit
-
+set -o xtrace
 LEIN=/home/javed.19/bin/lein
 MVN=${MVN:-mvn}
 GIT=${GIT:-git}
@@ -25,11 +25,11 @@ FLINK_DIR="flink-$FLINK_VERSION"
 SPARK_DIR="spark-$SPARK_VERSION-bin-hadoop2.6"
 
 #Get one of the closet apache mirrors
-APACHE_MIRROR=$(curl 'https://www.apache.org/dyn/closer.cgi' |   grep -o '<strong>[^<]*</strong>' |   sed 's/<[^>]*>//g' |   head -1)
+APACHE_MIRROR="http://mirror.nexcess.net/apache/"
 
 ZK_HOST="localhost"
 ZK_PORT="2181"
-ZK_CONNECTIONS="node147:2181,node027:2181,node029:2181"
+ZK_CONNECTIONS="storage07:2181,storage08:2181,storage14:2181"
 TOPIC=${TOPIC:-"ad-events"}
 PARTITIONS=${PARTITIONS:-5}
 LOAD=${LOAD:-16667}
