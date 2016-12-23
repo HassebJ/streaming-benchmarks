@@ -40,16 +40,16 @@ reset (){
     cd $BENCHMARK_HOME
     rm *.out
     rm ~/myhostnames
-    rm -rf kafka_2.10-0.8.2.1/
-    rm -rf spark-2.0.2-bin-hadoop2.6/
-    rm -rf apache-storm-0.9.7/
-    tar -xvf download-cache/spark-2.0.2-bin-hadoop2.6.tgz
-    tar -xvf download-cache/kafka_2.10-0.8.2.1.tgz 
-    tar -xvf download-cache/apache-storm-0.9.7.tar.gz
+    rm -rf $BENCHMARK_HOME/kafka_2.10-0.8.2.1/
+    rm -rf $BENCHMARK_HOME/spark-2.0.2-bin-hadoop2.6/
+    rm -rf $BENCHMARK_HOME/apache-storm-0.9.7/
+    tar -xvf $BENCHMARK_HOME/download-cache/spark-2.0.2-bin-hadoop2.6.tgz
+    tar -xvf $BENCHMARK_HOME/download-cache/kafka_2.10-0.8.2.1.tgz 
+    tar -xvf $BENCHMARK_HOME/download-cache/apache-storm-0.9.7.tar.gz
 
 }
 reset_all () {
-    execute_all "cd sbatch_spark_scripts; ./ri-spark-basic-comet.sbatch reset;"
+    execute_all "./sbatch_spark_scripts/ri-spark-basic-comet.sbatch reset"
 }
 
 write_hosts_to_file () {
@@ -331,7 +331,7 @@ run() {
     reset_all
   elif [ "execute_all" = "$OPERATION" ];
   then
-    execute_all "$1"
+    execute_all $1
   elif [ "STORM_TEST" = "$OPERATION" ];
   then
     run "START_ZK"
