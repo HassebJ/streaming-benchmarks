@@ -5,7 +5,6 @@ set -o pipefail
 set -o errtrace
 set -o nounset
 set -o errexit
-#set -o xtrace
 LEIN=/home/javed.19/bin/lein
 MVN=${MVN:-mvn}
 GIT=${GIT:-git}

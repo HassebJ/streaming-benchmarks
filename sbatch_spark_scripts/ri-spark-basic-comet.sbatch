@@ -1,5 +1,4 @@
 #/bin/bash
-#set -o xtrace
 #SBATCH --output="spark-basic-comet.%j.%N.out"
 #SBATCH --partition=compute
 #SBATCH --nodes=33
