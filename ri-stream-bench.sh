@@ -201,8 +201,13 @@ run() {
   then
     assign_broker_id
     start_if_needed kafka\.Kafka Kafka 10 "$KAFKA_DIR/bin/kafka-server-start.sh" "$KAFKA_DIR/config/server.properties"
-   sleep 15 
+   sleep 20 
    create_kafka_topic
+  elif [ "START_KAFKA_WO_TOPIC" = "$OPERATION" ];
+  then
+    assign_broker_id
+    start_if_needed kafka\.Kafka Kafka 10 "$KAFKA_DIR/bin/kafka-server-start.sh" "$KAFKA_DIR/config/server.properties"
+   sleep 2 
   elif [ "STOP_KAFKA" = "$OPERATION" ];
   then
     stop_if_needed kafka\.Kafka Kafka
