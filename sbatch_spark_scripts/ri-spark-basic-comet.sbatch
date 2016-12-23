@@ -49,7 +49,7 @@ reset (){
 
 }
 reset_all () {
-    execute_all "./sbatch_spark_scripts/ri-spark-basic-comet.sbatch reset"
+    execute_all "cd ./sbatch_spark_scripts;  ./ri-spark-basic-comet.sbatch reset"
 }
 
 write_hosts_to_file () {
@@ -150,7 +150,7 @@ config_zk () {
     ex $CONF_BENCHMARK/benchmarkConf.yaml -c ":%s/zookeeper.servers:\(\n\s*-\s".*"\)*/zookeeper.servers:\r    - $zk_connections/g" -c ':wq!' > tmp
     #convert cs to yaml format
     yaml_zk_connections=`echo $zk_connections_wo_port | sed -e "s/,/\"\r    - \"/g" | sed -e "s/^\"/   - \"/"`
-    ex $CONF_STORM/storm.yaml -c ":%s/storm.zookeeper.servers:\(\n\s*-\s".*"\)*/storm.zookeeper.servers:\r $yaml_zk_connections/g" -c ':wq!' > tmp
+    ex $CONF_STORM/storm.yaml -c ":%s/.*storm.zookeeper.servers:\(\n\s*-\s".*"\)*/storm.zookeeper.servers:\r $yaml_zk_connections/g" -c ':wq!' > tmp
 
     echo $((total_zk+1))
 }
@@ -276,8 +276,9 @@ execute_all () {
 
     let "counts=1"
     while [ $counts -lt 6 ]; do
-        cd /home/javed.19/git-pull/$counts/streaming-benchmarks
-        $1
+#        cd /home/javed.19/git-pull/$counts/streaming-benchmarks
+#        $1
+        ssh -t "localhost" "cd /home/javed.19/git-pull/$counts/streaming-benchmarks; $1"
         ((counts+=1))
     done
 
@@ -331,7 +332,7 @@ run() {
     reset_all
   elif [ "execute_all" = "$OPERATION" ];
   then
-    execute_all $1
+    execute_all "$1"
   elif [ "STORM_TEST" = "$OPERATION" ];
   then
     run "START_ZK"
