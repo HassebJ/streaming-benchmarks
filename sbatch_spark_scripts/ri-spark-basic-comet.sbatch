@@ -9,6 +9,8 @@
 #SBATCH --mail-type=ALL
 #SBATCH -A ddp132
 
+set -o xtrace
+
 export WORKDIR=`pwd`
 
 #this load on 7 nodes produces 100k net
@@ -18,10 +20,10 @@ WORKER_MEM_SPARK="10g"
 DAEMON_MEM_SPARK="2g"
 WORKER_CORES_SPARK=`grep "core id" /proc/cpuinfo | wc -l`
 SSD_PATH_BASE=/scratch/
-node_offset=1
+node_offset=2
 num_zk=3
 num_kafka=5
-num_spark=10
+num_spark=4
 num_redis=1
 #--------------------------------
 
@@ -84,7 +86,7 @@ get_master_host () {
 }
 #start zk servers
 start_zk () {
-
+    truncate -s 0 $CONF_BENCHMARK/../nohup.out 
     for ip_addr in `cat $CONF_BENCHMARK/zk`; do
         ssh -t $ip_addr "killall -9 java; cd $BENCHMARK_HOME; nohup ./ri-stream-bench.sh START_ZK"
         echo $ip_addr
@@ -101,12 +103,33 @@ replace_ip () {
    sed -i -e "s/$1.*/$1$2/g" $3
 }
 
+#start_kafka_wo_topic
+start_kafka_wo_topic () {
+    let "counts=1"
+    command="./ri-stream-bench.sh START_KAFKA_WO_TOPIC"
+    for ip_addr in `cat $CONF_BENCHMARK/kafka`; do
+        echo $ip_addr
+        truncate -s 0 /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka-wo-topic.out
+        replace_ip host.name= $ip_addr /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka_2.10-0.8.2.1/config/server.properties
+        ssh -t $ip_addr "cd /home/javed.19/git-pull/$counts/streaming-benchmarks ; nohup $command >> /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka-wo-topic.out" 
+        ((counts+=1))
+        sleep 5
+    done
+
+    let "counts=1"
+    for ip_addr in `cat $CONF_BENCHMARK/kafka`; do
+        cat /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka-wo-topic.out
+        ((counts+=1))
+    done
+}
+
 #start_kafka
 start_kafka () {
     let "counts=1"
     command="./ri-stream-bench.sh START_KAFKA"
     for ip_addr in `cat $CONF_BENCHMARK/kafka`; do
         echo $ip_addr
+        truncate -s 0 /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka.out
         replace_ip host.name= $ip_addr /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka_2.10-0.8.2.1/config/server.properties
         ssh -t $ip_addr "cd /home/javed.19/git-pull/$counts/streaming-benchmarks ; nohup $command >> /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka.out" 
         ((counts+=1))
@@ -264,10 +287,11 @@ stop_data_load() {
 }
 
 config_all () {
-  # node_offset=$(config_spark $node_offset)
-   node_offset=$(config_redis $node_offset)
-   node_offset=$(config_kafka $node_offset)
-   node_offset=$(config_zk $node_offset)
+    node_offset=$(config_spark $node_offset)
+#   node_offset=$(config_redis $node_offset)
+  # node_offset=$(config_kafka $node_offset)
+    config_kafka $node_offset
+    node_offset=$(config_zk $node_offset)
 
 }
 
@@ -303,7 +327,10 @@ run() {
   then
       start_kafka
       #check_kafka_running
-  elif [ "start_spark_cluster" = "$OPERATION" ];
+  elif [ "start_kafka_wo_topic" = "$OPERATION" ];
+  then
+      start_kafka_wo_topic
+   elif [ "start_spark_cluster" = "$OPERATION" ];
   then
       start_spark_cluster
   elif [ "start_spark_processing" = "$OPERATION" ];
