@@ -321,16 +321,25 @@ config_all () {
 execute_all () {
 
     let "counts=1"
-    for ip_address in `cat $CONF_BENCHMARK/kafka`; do #while [ $c unts -lt 6 ]; do
-#        cd /home/javed.19/git-pull/$counts/streaming-benchmarks
+    for ip_address in `cat $CONF_BENCHMARK/zk`; do 
+   # while [ $counts -lt 6 ]; do
 #        $1
-#        ssh -t "localhost" "cd /home/javed.19/git-pull/$counts/streaming-benchmarks; $1"
          ssh -t $ip_address "cd /home/javed.19/git-pull/finished/streaming-benchmarks; $1"
         ((counts+=1))
     done
 
 }
 
+execute_all_kafka () {
+
+    let "counts=1"
+    for ip_address in `cat $CONF_BENCHMARK/kafka`; do 
+#        $1
+         ssh -t $ip_address "cd /home/javed.19/git-pull/$counts/streaming-benchmarks; $1"
+        ((counts+=1))
+    done
+
+}
 
 run() {
   OPERATION=$1
@@ -380,6 +389,9 @@ run() {
   elif [ "reset_all" = "$OPERATION" ];
   then
     reset_all
+  elif [ "execute_all_kafka" = "$OPERATION" ];
+  then
+    execute_all_kafka "$1"
   elif [ "execute_all" = "$OPERATION" ];
   then
     execute_all "$1"
