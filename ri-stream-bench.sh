@@ -29,7 +29,7 @@ APACHE_MIRROR="http://mirror.nexcess.net/apache/"
 
 ZK_HOST="localhost"
 ZK_PORT="2181"
-ZK_CONNECTIONS="storage08:2181,storage14:2181,storage16:2181"
+ZK_CONNECTIONS="storage14:2181,storage16:2181"
 TOPIC=${TOPIC:-"ad-events"}
 PARTITIONS=${PARTITIONS:-5}
 LOAD=${LOAD:-16000}

@@ -21,8 +21,8 @@ DAEMON_MEM_SPARK="2g"
 WORKER_CORES_SPARK=`grep "core id" /proc/cpuinfo | wc -l`
 SSD_PATH_BASE=/scratch/
 node_offset=2
-num_zk=3
-num_kafka=5
+num_zk=2
+num_kafka=3
 num_spark=4
 num_redis=1
 #--------------------------------
@@ -312,9 +312,8 @@ stop_data_load() {
 config_all () {
     node_offset=$(config_spark $node_offset)
 #   node_offset=$(config_redis $node_offset)
-    node_offset=$(config_kafka 3 )
-  #  config_kafka $node_offset
-    node_offset=$(config_zk 8)
+    node_offset=$(config_kafka $node_offset )
+    node_offset=$(config_zk $node_offset)
 
 }
 
