@@ -103,7 +103,7 @@ replace_ip () {
    sed -i -e "s/$1.*/$1$2/g" $3
 }
 
-#start_kafka_wo_topic
+#start_kafka_wo_topic on seperate folders
 start_kafka_wo_topic () {
     let "counts=1"
     command="./ri-stream-bench.sh START_KAFKA_WO_TOPIC"
@@ -121,6 +121,29 @@ start_kafka_wo_topic () {
         cat /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka-wo-topic.out
         ((counts+=1))
     done
+}
+
+
+#start_kafka_wo_topic on the same directory
+start_kafka_wo_topic_same () {
+   # let "counts=1"
+    counts="finished"
+    truncate -s 0 /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka-wo-topic.out
+    command="./ri-stream-bench.sh START_KAFKA_WO_TOPIC"
+    for ip_addr in `cat $CONF_BENCHMARK/kafka`; do
+        echo $ip_addr
+       # truncate -s 0 /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka-wo-topic.out
+        replace_ip host.name= $ip_addr /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka_2.10-0.8.2.1/config/server.properties
+        ssh -t $ip_addr "cd /home/javed.19/git-pull/$counts/streaming-benchmarks ; nohup $command >> /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka-wo-topic.out" 
+       # ((counts+=1))
+        sleep 5
+    done
+
+   # let "counts=1"
+   # for ip_addr in `cat $CONF_BENCHMARK/kafka`; do
+        cat /home/javed.19/git-pull/$counts/streaming-benchmarks/kafka-wo-topic.out
+    #    ((counts+=1))
+   # done
 }
 
 #start_kafka
@@ -289,19 +312,20 @@ stop_data_load() {
 config_all () {
     node_offset=$(config_spark $node_offset)
 #   node_offset=$(config_redis $node_offset)
-  # node_offset=$(config_kafka $node_offset)
-    config_kafka $node_offset
-    node_offset=$(config_zk $node_offset)
+    node_offset=$(config_kafka 3 )
+  #  config_kafka $node_offset
+    node_offset=$(config_zk 8)
 
 }
 
 execute_all () {
 
     let "counts=1"
-    while [ $counts -lt 6 ]; do
+    for ip_address in `cat $CONF_BENCHMARK/kafka`; do #while [ $c unts -lt 6 ]; do
 #        cd /home/javed.19/git-pull/$counts/streaming-benchmarks
 #        $1
-        ssh -t "localhost" "cd /home/javed.19/git-pull/$counts/streaming-benchmarks; $1"
+#        ssh -t "localhost" "cd /home/javed.19/git-pull/$counts/streaming-benchmarks; $1"
+         ssh -t $ip_address "cd /home/javed.19/git-pull/finished/streaming-benchmarks; $1"
         ((counts+=1))
     done
 
