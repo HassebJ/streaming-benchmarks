@@ -29,7 +29,7 @@ APACHE_MIRROR="http://mirror.nexcess.net/apache/"
 
 ZK_HOST="localhost"
 ZK_PORT="2181"
-ZK_CONNECTIONS="node147:2181,node027:2181,node029:2181"
+ZK_CONNECTIONS="storage08:2181,storage14:2181,storage16:2181"
 TOPIC=${TOPIC:-"ad-events"}
 PARTITIONS=${PARTITIONS:-5}
 LOAD=${LOAD:-16000}
@@ -198,6 +198,12 @@ run() {
     stop_if_needed daemon.name=supervisor "Storm Supervisor"
     stop_if_needed daemon.name=ui "Storm UI"
     stop_if_needed daemon.name=logviewer "Storm LogViewer"
+  elif [ "START_KAFKA_WO_TOPIC" = "$OPERATION" ];
+  then
+    rm -rf /tmp/kafka-logs/
+    assign_broker_id
+    start_if_needed kafka\.Kafka Kafka 10 "$KAFKA_DIR/bin/kafka-server-start.sh" "$KAFKA_DIR/config/server.properties"
+   sleep 3 
   elif [ "START_KAFKA" = "$OPERATION" ];
   then
     rm -rf /tmp/kafka-logs/
