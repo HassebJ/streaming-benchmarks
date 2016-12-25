@@ -40,7 +40,7 @@ CONF_KAFKA=$BENCHMARK_HOME/kafka_2.10-0.8.2.1/config
 reset (){
     cd $BENCHMARK_HOME
     rm *.out
-    rm ~/myhostnames
+#    rm ~/myhostnames
     rm -rf $BENCHMARK_HOME/kafka_2.10-0.8.2.1/
     rm -rf $BENCHMARK_HOME/spark-2.0.2-bin-hadoop2.6/
     rm -rf $BENCHMARK_HOME/apache-storm-0.9.7/
