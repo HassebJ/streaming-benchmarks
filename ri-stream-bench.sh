@@ -25,7 +25,7 @@ FLINK_DIR="flink-$FLINK_VERSION"
 SPARK_DIR="spark-$SPARK_VERSION-bin-hadoop2.6"
 
 #Get one of the closet apache mirrors
-APACHE_MIRROR="http://mirror.nexcess.net/apache/"
+#APACHE_MIRROR=$(curl 'https://www.apache.org/dyn/closer.cgi' |   grep -o '<strong>[^<]*</strong>' |   sed 's/<[^>]*>//g' |   head -1)
 
 ZK_HOST="localhost"
 ZK_PORT="2181"
@@ -165,7 +165,6 @@ run() {
 
   elif [ "START_ZK" = "$OPERATION" ];
   then
-    rm -rf /tmp/dev-storm-zookeeper
     start_if_needed dev_zookeeper ZooKeeper 10 "$STORM_DIR/bin/storm" dev-zookeeper
   elif [ "STOP_ZK" = "$OPERATION" ];
   then
@@ -184,7 +183,7 @@ run() {
   elif [ "START_STORM_SLAVE" = "$OPERATION" ];
   then
     start_if_needed daemon.name=supervisor "Storm Supervisor" 3 "$STORM_DIR/bin/storm" supervisor
-    start_if_needed daemon.name=logviewer "Storm LogViewer" 3 "$STORM_DIR/bin/storm" logviewer
+#    start_if_needed daemon.name=logviewer "Storm LogViewer" 3 "$STORM_DIR/bin/storm" logviewer
     sleep 20
   elif [ "START_STORM_MASTER" = "$OPERATION" ];
   then
@@ -198,15 +197,8 @@ run() {
     stop_if_needed daemon.name=supervisor "Storm Supervisor"
     stop_if_needed daemon.name=ui "Storm UI"
     stop_if_needed daemon.name=logviewer "Storm LogViewer"
-  elif [ "START_KAFKA_WO_TOPIC" = "$OPERATION" ];
-  then
-    rm -rf /tmp/kafka-logs/
-    assign_broker_id
-    start_if_needed kafka\.Kafka Kafka 10 "$KAFKA_DIR/bin/kafka-server-start.sh" "$KAFKA_DIR/config/server.properties"
-   sleep 3 
   elif [ "START_KAFKA" = "$OPERATION" ];
   then
-    rm -rf /tmp/kafka-logs/
     assign_broker_id
     start_if_needed kafka\.Kafka Kafka 10 "$KAFKA_DIR/bin/kafka-server-start.sh" "$KAFKA_DIR/config/server.properties"
    sleep 7 
@@ -224,8 +216,8 @@ run() {
   elif [ "START_SPARK" = "$OPERATION" ];
   then
     #start_if_needed org.apache.spark.deploy.master.Master SparkMaster 5 $SPARK_DIR/sbin/start-all.sh
-    start_if_needed org.apache.spark.deploy.master.Master SparkMaster 5 $SPARK_DIR/sbin/start-master.sh -h storage01  -p 7077
-    start_if_needed org.apache.spark.deploy.worker.Worker SparkSlave 5 $SPARK_DIR/sbin/start-slaves.sh spark://storage01:7077
+    start_if_needed org.apache.spark.deploy.master.Master SparkMaster 5 $SPARK_DIR/sbin/start-master.sh -h storage01-ib  -p 7077
+    start_if_needed org.apache.spark.deploy.worker.Worker SparkSlave 5 $SPARK_DIR/sbin/start-slaves.sh spark://storage01-ib:7077
   elif [ "STOP_SPARK" = "$OPERATION" ];
   then
     stop_if_needed org.apache.spark.deploy.master.Master SparkMaster
@@ -253,7 +245,7 @@ run() {
     sleep 10
   elif [ "START_SPARK_PROCESSING" = "$OPERATION" ];
   then
-    "$SPARK_DIR/bin/spark-submit" --master spark://storage01:7077  --class spark.benchmark.KafkaRedisAdvertisingStream ./spark-benchmarks/target/spark-benchmarks-0.1.0.jar "$CONF_FILE" &
+    "$SPARK_DIR/bin/spark-submit" --master spark://storage01-ib:7077  --class spark.benchmark.KafkaRedisAdvertisingStream ./spark-benchmarks/target/spark-benchmarks-0.1.0.jar "$CONF_FILE" &
     sleep 5
   elif [ "STOP_SPARK_PROCESSING" = "$OPERATION" ];
   then
