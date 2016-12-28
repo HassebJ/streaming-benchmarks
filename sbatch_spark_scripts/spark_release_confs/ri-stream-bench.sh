@@ -25,7 +25,7 @@ FLINK_DIR="flink-$FLINK_VERSION"
 SPARK_DIR="spark-$SPARK_VERSION-bin-hadoop2.6"
 
 #Get one of the closet apache mirrors
-APACHE_MIRROR=$(curl 'https://www.apache.org/dyn/closer.cgi' |   grep -o '<strong>[^<]*</strong>' |   sed 's/<[^>]*>//g' |   head -1)
+#APACHE_MIRROR=$(curl 'https://www.apache.org/dyn/closer.cgi' |   grep -o '<strong>[^<]*</strong>' |   sed 's/<[^>]*>//g' |   head -1)
 
 ZK_HOST="localhost"
 ZK_PORT="2181"
@@ -197,6 +197,12 @@ run() {
     stop_if_needed daemon.name=supervisor "Storm Supervisor"
     stop_if_needed daemon.name=ui "Storm UI"
     stop_if_needed daemon.name=logviewer "Storm LogViewer"
+  elif [ "START_KAFKA_WO_TOPIC" = "$OPERATION" ];
+  then
+    rm -rf /tmp/kafka-logs/
+    assign_broker_id
+    start_if_needed kafka\.Kafka Kafka 10 "$KAFKA_DIR/bin/kafka-server-start.sh" "$KAFKA_DIR/config/server.properties"
+    sleep 3 
   elif [ "START_KAFKA" = "$OPERATION" ];
   then
     assign_broker_id
