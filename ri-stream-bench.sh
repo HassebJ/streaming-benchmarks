@@ -200,6 +200,10 @@ run() {
     stop_if_needed daemon.name=supervisor "Storm Supervisor"
     stop_if_needed daemon.name=ui "Storm UI"
     stop_if_needed daemon.name=logviewer "Storm LogViewer"
+  elif [ "START_KAFKA_TOPIC" = "$OPERATION" ];
+  then
+    create_kafka_topic
+    sleep 10
   elif [ "START_KAFKA_WO_TOPIC" = "$OPERATION" ];
   then
     rm -rf /tmp/kafka-logs/

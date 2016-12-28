@@ -16,6 +16,7 @@ REDIS_VERSION=${REDIS_VERSION:-"3.0.5"}
 SCALA_BIN_VERSION=${SCALA_BIN_VERSION:-"2.10"}
 SCALA_SUB_VERSION=${SCALA_SUB_VERSION:-"4"}
 STORM_VERSION=${STORM_VERSION:-"0.9.7"}
+#STORM_VERSION=${STORM_VERSION:-"1.0.1"}
 FLINK_VERSION=${FLINK_VERSION:-"1.1.3"}
 SPARK_VERSION=${SPARK_VERSION:-"2.0.2"}
 STORM_DIR="apache-storm-$STORM_VERSION"
@@ -182,11 +183,13 @@ run() {
     rm -f dump.rdb
   elif [ "START_STORM_SLAVE" = "$OPERATION" ];
   then
+    rm -rf /tmp/storm
     start_if_needed daemon.name=supervisor "Storm Supervisor" 3 "$STORM_DIR/bin/storm" supervisor
     start_if_needed daemon.name=logviewer "Storm LogViewer" 3 "$STORM_DIR/bin/storm" logviewer
     sleep 20
   elif [ "START_STORM_MASTER" = "$OPERATION" ];
   then
+    rm -rf /tmp/storm
     start_if_needed daemon.name=nimbus "Storm Nimbus" 3 "$STORM_DIR/bin/storm" nimbus
     start_if_needed daemon.name=ui "Storm UI" 3 "$STORM_DIR/bin/storm" ui
     start_if_needed daemon.name=logviewer "Storm LogViewer" 3 "$STORM_DIR/bin/storm" logviewer
@@ -197,6 +200,10 @@ run() {
     stop_if_needed daemon.name=supervisor "Storm Supervisor"
     stop_if_needed daemon.name=ui "Storm UI"
     stop_if_needed daemon.name=logviewer "Storm LogViewer"
+  elif [ "START_KAFKA_TOPIC" = "$OPERATION" ];
+  then
+    create_kafka_topic
+    sleep 10
   elif [ "START_KAFKA_WO_TOPIC" = "$OPERATION" ];
   then
     rm -rf /tmp/kafka-logs/
@@ -222,8 +229,8 @@ run() {
   elif [ "START_SPARK" = "$OPERATION" ];
   then
     #start_if_needed org.apache.spark.deploy.master.Master SparkMaster 5 $SPARK_DIR/sbin/start-all.sh
-    start_if_needed org.apache.spark.deploy.master.Master SparkMaster 5 $SPARK_DIR/sbin/start-master.sh -h MASTER_REPLACE  -p 7077
-    start_if_needed org.apache.spark.deploy.worker.Worker SparkSlave 5 $SPARK_DIR/sbin/start-slaves.sh spark://MASTER_REPLACE:7077
+    start_if_needed org.apache.spark.deploy.master.Master SparkMaster 5 $SPARK_DIR/sbin/start-master.sh -h storage01-ib  -p 7077
+    start_if_needed org.apache.spark.deploy.worker.Worker SparkSlave 5 $SPARK_DIR/sbin/start-slaves.sh spark://storage01-ib:7077
   elif [ "STOP_SPARK" = "$OPERATION" ];
   then
     stop_if_needed org.apache.spark.deploy.master.Master SparkMaster
@@ -251,7 +258,7 @@ run() {
     sleep 10
   elif [ "START_SPARK_PROCESSING" = "$OPERATION" ];
   then
-    "$SPARK_DIR/bin/spark-submit" --master spark://MASTER_REPLACE:7077  --class spark.benchmark.KafkaRedisAdvertisingStream ./spark-benchmarks/target/spark-benchmarks-0.1.0.jar "$CONF_FILE" &
+    "$SPARK_DIR/bin/spark-submit" --master spark://storage01-ib:7077  --class spark.benchmark.KafkaRedisAdvertisingStream ./spark-benchmarks/target/spark-benchmarks-0.1.0.jar "$CONF_FILE" &
     sleep 5
   elif [ "STOP_SPARK_PROCESSING" = "$OPERATION" ];
   then
