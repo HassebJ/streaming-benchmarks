@@ -16,6 +16,7 @@ REDIS_VERSION=${REDIS_VERSION:-"3.0.5"}
 SCALA_BIN_VERSION=${SCALA_BIN_VERSION:-"2.10"}
 SCALA_SUB_VERSION=${SCALA_SUB_VERSION:-"4"}
 STORM_VERSION=${STORM_VERSION:-"0.9.7"}
+#STORM_VERSION=${STORM_VERSION:-"1.0.1"}
 FLINK_VERSION=${FLINK_VERSION:-"1.1.3"}
 SPARK_VERSION=${SPARK_VERSION:-"2.0.2"}
 STORM_DIR="apache-storm-$STORM_VERSION"
@@ -182,11 +183,13 @@ run() {
     rm -f dump.rdb
   elif [ "START_STORM_SLAVE" = "$OPERATION" ];
   then
+    rm -rf /tmp/storm
     start_if_needed daemon.name=supervisor "Storm Supervisor" 3 "$STORM_DIR/bin/storm" supervisor
-#    start_if_needed daemon.name=logviewer "Storm LogViewer" 3 "$STORM_DIR/bin/storm" logviewer
+    start_if_needed daemon.name=logviewer "Storm LogViewer" 3 "$STORM_DIR/bin/storm" logviewer
     sleep 20
   elif [ "START_STORM_MASTER" = "$OPERATION" ];
   then
+    rm -rf /tmp/storm
     start_if_needed daemon.name=nimbus "Storm Nimbus" 3 "$STORM_DIR/bin/storm" nimbus
     start_if_needed daemon.name=ui "Storm UI" 3 "$STORM_DIR/bin/storm" ui
     start_if_needed daemon.name=logviewer "Storm LogViewer" 3 "$STORM_DIR/bin/storm" logviewer

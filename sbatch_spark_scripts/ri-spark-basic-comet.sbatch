@@ -21,9 +21,9 @@ DAEMON_MEM_SPARK="2g"
 WORKER_CORES_SPARK=`grep "core id" /proc/cpuinfo | wc -l`
 SSD_PATH_BASE=/scratch/
 node_offset=2
-num_zk=2
-num_kafka=3
-num_spark=4
+num_zk=3
+num_kafka=5
+num_spark=10
 num_redis=1
 #--------------------------------
 
@@ -238,11 +238,28 @@ config_spark () {
     echo $((total_spark+1))
 }
 
+start_storm_cluster () {
+    truncate -s 0 $BENCHMARK_HOME/storm-load.out
+    cd $BENCHMARK_HOME
+    ./ri-stream-bench.sh START_STORM_MASTER
+    command="./ri-stream-bench.sh START_STORM_SLAVE"
+    for ip_addr in `cat $CONF_SPARK/conf/slaves`; do
+     #   ssh -t $ip_addr "cd $BENCHMARK_HOME; nohup $command >> storm-load.out"
+       ssh -t $ip_addr "cd $BENCHMARK_HOME; $command"
+        ((counts+=1))
+    done
+
+    cat $BENCHMARK_HOME/storm-load.out 
+    
+
+}
+
+
 #start_spark
 start_spark_cluster () {
     master=`cat ~/myhostnames | head -1`
     echo "got the master's hostname: $master"
-    
+    node_name_suffix="-ib"    
     cd $BENCHMARK_HOME
     cp $CONF_SPARK_DEFAULT/* $CONF_SPARK/conf/
     cp $WORKDIR/spark_release_confs/ri-stream-bench.sh $BENCHMARK_HOME
@@ -311,7 +328,7 @@ stop_data_load() {
 
 config_all () {
     node_offset=$(config_spark $node_offset)
-#   node_offset=$(config_redis $node_offset)
+    node_offset=$(config_redis $node_offset)
     node_offset=$(config_kafka $node_offset )
     node_offset=$(config_zk $node_offset)
 
@@ -334,7 +351,7 @@ execute_all_kafka () {
     let "counts=1"
     for ip_address in `cat $CONF_BENCHMARK/kafka`; do 
 #        $1
-         ssh -t $ip_address "cd /home/javed.19/git-pull/$counts/streaming-benchmarks; $1"
+         ssh -t $ip_address "cd /home/javed.19/git-pull/finished/streaming-benchmarks; $1"
         ((counts+=1))
     done
 
@@ -346,6 +363,9 @@ run() {
   if [ "config_all" = "$OPERATION" ];
   then
       config_all
+  elif [ "config_spark" = "$OPERATION" ];
+  then
+      config_spark 2
   elif [ "iptof" = "$OPERATION" ];
   then
       write_hosts_to_file "$1"
@@ -362,9 +382,12 @@ run() {
   elif [ "start_kafka_wo_topic" = "$OPERATION" ];
   then
       start_kafka_wo_topic
-   elif [ "start_spark_cluster" = "$OPERATION" ];
+  elif [ "start_spark_cluster" = "$OPERATION" ];
   then
       start_spark_cluster
+  elif [ "start_storm_cluster" = "$OPERATION" ];
+  then
+      start_storm_cluster
   elif [ "start_spark_processing" = "$OPERATION" ];
   then
       start_spark_processing
