@@ -20,10 +20,10 @@ WORKER_MEM_SPARK="10g"
 DAEMON_MEM_SPARK="2g"
 WORKER_CORES_SPARK=`grep "core id" /proc/cpuinfo | wc -l`
 SSD_PATH_BASE=/scratch/
-node_offset=2
-num_zk=3
-num_kafka=5
-num_spark=10
+node_offset=1
+num_zk=2
+num_kafka=3
+num_spark=4
 num_redis=1
 #--------------------------------
 
@@ -235,6 +235,7 @@ config_kafka_all () {
 config_spark () {
     let total_spark=$1+num_spark-1
     cat ~/myhostnames | sed -n "$1,$total_spark p" > $CONF_SPARK/conf/slaves
+    cp $CONF_SPARK/conf/slaves ../../../../HiBench/spark-2.0.2-bin-hadoop2.7/conf/
     echo $((total_spark+1))
 }
 
@@ -291,7 +292,7 @@ start_spark_processing (){
 start_data_load () {
     cd $BENCHMARK_HOME
     rm $BENCHMARK_HOME/load
-    replace_ip "LOAD:-" "$load}" $BENCHMARK_HOME/ri-stream-bench.sh                                              
+#    replace_ip "LOAD:-" "$load}" $BENCHMARK_HOME/ri-stream-bench.sh                                              
    # let "count=0"
    # command="./ri-stream-bench.sh START_LOAD"
    # cat $HOME/myhostnames | tail -7 |  while read ip_addr; do                                                     
@@ -310,7 +311,7 @@ start_data_load () {
 }
 
 stop_data_load() {
-
+    cat ~/myhostnames | tail -7 > loaders.txt
     mussh -H loaders.txt -c "cd /home/javed.19/git-pull/finished/streaming-benchmarks; ./ri-stream-bench.sh STOP_LOAD" -m
     #cd $BENCHMARK_HOME
     #let "count=0"
@@ -328,7 +329,7 @@ stop_data_load() {
 
 config_all () {
     node_offset=$(config_spark $node_offset)
-    node_offset=$(config_redis $node_offset)
+ #   node_offset=$(config_redis $node_offset)
     node_offset=$(config_kafka $node_offset )
     node_offset=$(config_zk $node_offset)
 
@@ -351,7 +352,7 @@ execute_all_kafka () {
     let "counts=1"
     for ip_address in `cat $CONF_BENCHMARK/kafka`; do 
 #        $1
-         ssh -t $ip_address "cd /home/javed.19/git-pull/finished/streaming-benchmarks; $1"
+         ssh -t $ip_address "cd /home/javed.19/git-pull/$counts/streaming-benchmarks; $1"
         ((counts+=1))
     done
 
