@@ -30,7 +30,7 @@ SPARK_DIR="spark-$SPARK_VERSION-bin-hadoop2.6"
 
 ZK_HOST="localhost"
 ZK_PORT="2181"
-ZK_CONNECTIONS="node147:2181,node027:2181,node029:2181"
+ZK_CONNECTIONS="storage14-ib:2181,storage15-ib:2181"
 TOPIC=${TOPIC:-"ad-events"}
 PARTITIONS=${PARTITIONS:-5}
 LOAD=${LOAD:-16000}
@@ -43,6 +43,8 @@ pid_match() {
 }
 assign_broker_id(){
    local BROKERID=`/sbin/ip -o addr show dev "eth0" | awk '$3 == "inet" {print $4}' | sed -r 's!/.*!!; s!.*\.!!'`
+   local HOSTNAME=`/sbin/ip addr show ib0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1`
+   sed -i -e "s/host.name=.*/host.name=$HOSTNAME/g" $KAFKA_DIR/config/server.properties 
    sed -i -e "s/broker.id=[0-9]*/broker.id=$BROKERID/g"  $KAFKA_DIR/config/server.properties
 }
 start_if_needed() {
