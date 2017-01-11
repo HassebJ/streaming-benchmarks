@@ -43,7 +43,8 @@ pid_match() {
 }
 assign_broker_id(){
    local BROKERID=`/sbin/ip -o addr show dev "eth0" | awk '$3 == "inet" {print $4}' | sed -r 's!/.*!!; s!.*\.!!'`
-   local HOSTNAME=`/sbin/ip addr show ib0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1`
+#   local HOSTNAME=`/sbin/ip addr show ib0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1`
+   local HOSTNAME=`hostname -s`-ib
    sed -i -e "s/host.name=.*/host.name=$HOSTNAME/g" $KAFKA_DIR/config/server.properties
    sed -i -e "s/broker.id=[0-9]*/broker.id=$BROKERID/g"  $KAFKA_DIR/config/server.properties
 }
