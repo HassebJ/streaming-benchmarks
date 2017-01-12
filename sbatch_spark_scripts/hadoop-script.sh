@@ -80,9 +80,9 @@ HADOOP_NAME_DIR=/dev/shm/$MYUSER/hadoopNamenode
 #  SSD_PATH_SPARK=$SSD_PATH_BASE/$MYUSER/spark/
 #fi
 
-
+config_hadoop (){
 # start hadoop/hdfs/yarn
-for i in `cat $HOME/myhostnames`; do killall -9 java; done
+#for i in `cat $HOME/myhostnames`; do killall -9 java; done
 cp $CONF_HADOOP/* $HADOOP_HOME/etc/hadoop/
 cp $CONF_HIBENCH/* $BENCHMARK_HOME/conf/
 sed -i "s|MASTER_REPLACE|$master|g" $HADOOP_HOME/etc/hadoop/*.xml
@@ -100,6 +100,9 @@ sed -i "s|RAM_HADOOP_REPLACE|$RAMDISK_PATH_HADOOP|g" $HADOOP_HOME/etc/hadoop/hdf
 cat ../../streaming-benchmarks/spark-2.0.2-bin-hadoop2.6/conf/slaves > $BENCHMARK_HOME/spark-2.0.2-bin-hadoop2.7/conf/slaves
 cat $BENCHMARK_HOME/spark-2.0.2-bin-hadoop2.7/conf/slaves  > $HADOOP_HOME/etc/hadoop/slaves
 cat $HADOOP_HOME/etc/hadoop/slaves
+}
+
+start_hadoop (){
 $HADOOP_HOME/sbin/stop-all.sh
 echo "Stopped..................."
 for ip_addr in `cat $HADOOP_HOME/etc/hadoop/slaves`; do
@@ -127,6 +130,24 @@ $HADOOP_HOME/sbin/yarn-daemon.sh start resourcemanager
 $HADOOP_HOME/sbin/yarn-daemons.sh start nodemanager
 echo ".........Done YARN Setup..........."
 #fi
+
+
+}
+
+run() {
+    OPERATION=$1
+    shift
+    if [ "" = "$OPERATION" ];
+    then
+          config_hadoop
+          start_hadoop
+      elif [ "config" = "$OPERATION" ];
+      then
+            config_hadoop
+    fi
+}
+
+     run "$@"
 
 not_needed () {
 
@@ -185,3 +206,5 @@ do
 	fi
 done
 }
+
+
