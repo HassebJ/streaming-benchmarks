@@ -55,7 +55,7 @@ reset_all () {
 }
 
 write_hosts_to_file () {
-
+    rm ~/myhostnames
     ib_enabled=$1
     
     if [ "$ib_enabled" == "y" ];
@@ -376,6 +376,9 @@ run() {
   elif [ "config_spark" = "$OPERATION" ];
   then
       config_spark 2
+  elif [ "config_kafka" = "$OPERATION" ];
+  then
+      config_kafka 6 
   elif [ "iptof" = "$OPERATION" ];
   then
       write_hosts_to_file "$1"
