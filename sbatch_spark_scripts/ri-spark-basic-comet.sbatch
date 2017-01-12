@@ -29,6 +29,7 @@ num_redis=1
 
 BENCHMARK_HOME=$(readlink -f $WORKDIR/..)
 echo $BENCHMARK_HOME
+HIBENCH_HOME=$BENCHMARK_HOME/../HiBench
 CONF_SPARK_DEFAULT=$WORKDIR/spark_release_confs/spark
 CONF_BENCHMARK=$BENCHMARK_HOME/conf
 CONF_SPARK=$BENCHMARK_HOME/spark-2.0.2-bin-hadoop2.6
@@ -191,6 +192,7 @@ config_zk () {
     sed -i -e "s/zookeeper.connect=.*/zookeeper.connect=$zk_connections/g" $CONF_KAFKA/consumer.properties
     zk_connections_wo_quote=`echo $zk_connections | sed -e "s/\"//g"`
     sed -i -e "s/zookeeper.connect=.*/zookeeper.connect=$zk_connections_wo_quote/g" $CONF_KAFKA/server.properties
+    sed -i -e "s/ZK_CS_REPLACE/$zk_connections_wo_quote/g" $HIBENCH_HOME/conf/hibench.conf 
     #write connection string to benchmark benchMark.yaml
     ex $CONF_BENCHMARK/benchmarkConf.yaml -c ":%s/zookeeper.servers:\(\n\s*-\s".*"\)*/zookeeper.servers:\r    - $zk_connections/g" -c ':wq!' > tmp
     #convert cs to yaml format
@@ -214,6 +216,7 @@ config_kafka () {
     cat ~/myhostnames | sed -n "$1,$total_kafka p" > $CONF_BENCHMARK/kafka
     kafka_hosts=`cat ~/myhostnames | sed -n "$1,$total_kafka p"`
     kafka_connections=`echo $kafka_hosts | sed -e "s/\s/:9092,/g" | sed -e "s/$/:9092/"`    
+    sed -i -e "s/KAFKA_BROKERS_REPLACE/$kafka_connections/" $HIBENCH_HOME/conf/hibench.conf
     sed -i -e "s/metadata.broker.list=.*/metadata.broker.list=$kafka_connections/g" $CONF_KAFKA/producer.properties
     kafka_connections=`echo $kafka_hosts | sed -e "s/\s/,/g" | sed -e "s/$/\"/" | sed -e "s/^/\"/"`
     yaml_kafka_connections=`echo $kafka_connections | sed -e "s/,/\"\r    - \"/g" | sed -e "s/^\"/   - \"/"`

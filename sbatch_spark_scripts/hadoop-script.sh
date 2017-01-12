@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -o xtrace
 # step 0. Runtime parameters: $1 = testname [groupby|sortby|terasort] and $2 = slurm_job_id
 # step 1. Update the config dirs: JAVA_HOME, HADOOP_HOME, SPARK_HOME, CONF_BASE to <shankard-svn-checked-out>/take_spark_release_numbers/spark-basic
 # step 2. Update data size and number of tasks based on your current test => MAPS, REDUCES, NUM_KVS for groupby/sortby 
@@ -10,17 +10,17 @@
 
 # CHANGE HERE : cluster specific
 #--------------------------------
-node_name_suffix=".ibnet"
+node_name_suffix=""
 WORKER_MEM_SPARK="96g"
 DAEMON_MEM_SPARK="2g"
-SSD_PATH_BASE=/scratch/
+SSD_PATH_BASE=/scratch
 #--------------------------------
 
-if [ $# -lt 3 ] 
-then
-    echo "Usage: $0 mode testname-[groupby|sortby|terasort] slurm_job_id [NUM_MAPS NUM_REDS NUM_KVS KVSIZE ITERATIONS]"
-    exit 1
-fi
+#if [ $# -lt 3 ] 
+#then
+#    echo "Usage: $0 mode testname-[groupby|sortby|terasort] slurm_job_id [NUM_MAPS NUM_REDS NUM_KVS KVSIZE ITERATIONS]"
+#    exit 1
+#fi
 
 #CHANGE HERE : test params
 MODE=$1
@@ -38,21 +38,23 @@ KVSIZE_ACTUAL=`expr $KVSIZE + 4`
 #TODO
 TERASORT_DATASIZE=10g
 
-echo "IB_ENABLED=$IB_ENABLED TESTNAME=$TESTNAME SLURM_JOB_ID=$SLURM_JOB_ID MAPS=$MAPS REDUCES=$REDUCES NUM_KVS=$NUM_KVS KVSIZE=$KVSIZE ITERATIONS=$ITERATIONS Total_Data_Size=`expr $MAPS \* $NUM_KVS \* $KVSIZE_ACTUAL / 1024 / 1024 / 1024`GB"
+#echo "IB_ENABLED=$IB_ENABLED TESTNAME=$TESTNAME SLURM_JOB_ID=$SLURM_JOB_ID MAPS=$MAPS REDUCES=$REDUCES NUM_KVS=$NUM_KVS KVSIZE=$KVSIZE ITERATIONS=$ITERATIONS Total_Data_Size=`expr $MAPS \* $NUM_KVS \* $KVSIZE_ACTUAL / 1024 / 1024 / 1024`GB"
 
-export MYUSER=$USER
+export MYUSER=javed
 if [ x$JAVA_HOME == x"" ]
 then
   echo "Setting JAVA_HOME!"
   export JAVA_HOME=/home/luxi/util/jdk1.7.0
 fi
+export WORKDIR=`pwd`
+BENCHMARK_HOME=$(readlink -f $WORKDIR/../../HiBench)
 
-export HADOOP_HOME=/home/luxi/take_spark_release_numbers/tests/rdma-hadoop-2.x-1.0.0
+export HADOOP_HOME=$BENCHMARK_HOME/hadoop-2.7.3
 export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
-export SPARK_HOME=/home/luxi/take_spark_release_numbers/tests/rdma-spark-0.9.3-bin
-CONF_BASE=$SPARK_HOME/../../spark-basic/spark_release_confs/ #change this if necessary
+CONF_BASE=$WORKDIR/spark_release_confs
 CONF_SPARK=$CONF_BASE/spark
 CONF_HADOOP=$CONF_BASE/hadoop
+CONF_HIBENCH=$CONF_BASE/HiBench
 
 if [ ! -f $HOME/myhostnames ]
 then
@@ -67,31 +69,36 @@ echo "got the master's hostname: $master"
 
 WORKER_CORES_SPARK=`grep "core id" /proc/cpuinfo | wc -l`
 
-RAMDISK_PATH_HADOOP=/dev/shm/$MYUSER/$SLURM_JOB_ID/hadoop/
-HADOOP_NAME_DIR=/dev/shm/$MYUSER/$SLURM_JOB_ID/hadoopNamenode
-if [[ $HOSTNAME == *storage* ]]
-then
-  SSD_PATH_HADOOP=/data/ssd1/$MYUSER/$SLURM_JOB_ID/hadoop/
-  SSD_PATH_SPARK=/data/ssd1/$MYUSER/$SLURM_JOB_ID/spark/
-else
-  SSD_PATH_HADOOP=$SSD_PATH_BASE/$MYUSER/$SLURM_JOB_ID/hadoop/
-  SSD_PATH_SPARK=$SSD_PATH_BASE/$MYUSER/$SLURM_JOB_ID/spark/
-fi
+RAMDISK_PATH_HADOOP=/dev/shm/$MYUSER/hadoop/
+HADOOP_NAME_DIR=/dev/shm/$MYUSER/hadoopNamenode
+#if [[ $HOSTNAME == *storage* ]]
+#then
+  SSD_PATH_HADOOP=/data/ssd1/$MYUSER/hadoop/
+  SSD_PATH_SPARK=/data/ssd1/$MYUSER/spark/
+#else
+#  SSD_PATH_HADOOP=$SSD_PATH_BASE/$MYUSER/hadoop/
+#  SSD_PATH_SPARK=$SSD_PATH_BASE/$MYUSER/spark/
+#fi
 
 
 # start hadoop/hdfs/yarn
 for i in `cat $HOME/myhostnames`; do killall -9 java; done
 cp $CONF_HADOOP/* $HADOOP_HOME/etc/hadoop/
+cp $CONF_HIBENCH/* $BENCHMARK_HOME/conf/
 sed -i "s|MASTER_REPLACE|$master|g" $HADOOP_HOME/etc/hadoop/*.xml
+sed -i "s|MASTER_REPLACE|$master|g" $BENCHMARK_HOME/conf/hadoop.conf
 sed -i "s|IB_ENABLED_REPLACE|$IB_ENABLED|g" $HADOOP_HOME/etc/hadoop/core-site.xml
 sed -i "s|JAVA_HOME_REPLACE|$JAVA_HOME|g" $HADOOP_HOME/etc/hadoop/hadoop-env.sh
 sed -i "s|HADOOP_HOME_REPLACE|$HADOOP_HOME|g" $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+sed -i "s|HADOOP_HOME_REPLACE|$HADOOP_HOME|g" $BENCHMARK_HOME/conf/hadoop.conf
 sed -i "s|IB_ENABLED_REPLACE|$IB_ENABLED|g" $HADOOP_HOME/etc/hadoop/hdfs-site.xml
 sed -i "s|MASTER_DFS_REPLACE|$orig_master|g" $HADOOP_HOME/etc/hadoop/hdfs-site.xml
 sed -i "s|SSD_HADOOP_REPLACE|$SSD_PATH_HADOOP|g" $HADOOP_HOME/etc/hadoop/hdfs-site.xml
 sed -i "s|HADOOP_NAME_DIR_REPLACE|$HADOOP_NAME_DIR|g" $HADOOP_HOME/etc/hadoop/hdfs-site.xml
 sed -i "s|RAM_HADOOP_REPLACE|$RAMDISK_PATH_HADOOP|g" $HADOOP_HOME/etc/hadoop/hdfs-site.xml
-cat $HOME/myhostnames | awk '{print $1"'"$node_name_suffix"'"}' | grep -v $master > $HADOOP_HOME/etc/hadoop/slaves
+#cat $HOME/myhostnames | awk '{print $1"'"$node_name_suffix"'"}' | grep -v $master > $HADOOP_HOME/etc/hadoop/slaves
+cat ../../streaming-benchmarks/spark-2.0.2-bin-hadoop2.6/conf/slaves > $BENCHMARK_HOME/spark-2.0.2-bin-hadoop2.7/conf/slaves
+cat $BENCHMARK_HOME/spark-2.0.2-bin-hadoop2.7/conf/slaves  > $HADOOP_HOME/etc/hadoop/slaves
 cat $HADOOP_HOME/etc/hadoop/slaves
 $HADOOP_HOME/sbin/stop-all.sh
 echo "Stopped..................."
@@ -107,16 +114,19 @@ done
 #rm -rf /oasis/scratch/comet/$MYUSER/temp_project/sparklogs/*
 rm -rf $HADOOP_NAME_DIR
 
-if [[ $TESTNAME == "groupby" || $TESTNAME == "sortby" ]] 
-then
-  echo "Skip to start hadoop...."
-else
+#if [[ $TESTNAME == "groupby" || $TESTNAME == "sortby" ]] 
+#then
+#  echo "Skip to start hadoop...."
+#else
 $HADOOP_HOME/bin/hadoop namenode -format
 echo "Starting..................."
 $HADOOP_HOME/sbin/hadoop-daemon.sh start namenode
 $HADOOP_HOME/sbin/hadoop-daemons.sh start datanode
 echo ".........Done HDFS/Hadoop Setup..........."
-fi
+$HADOOP_HOME/sbin/yarn-daemon.sh start resourcemanager
+$HADOOP_HOME/sbin/yarn-daemons.sh start nodemanager
+echo ".........Done YARN Setup..........."
+#fi
 
 not_needed () {
 

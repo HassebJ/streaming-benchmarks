@@ -37,22 +37,22 @@
     
         <property>
                 <name>yarn.nodemanager.resource.memory-mb</name>
-        	<value>YARN_MODE_NODE_MNGR_MEM_REPLACE</value>
+        	<value>8192</value>
         </property>
         <property>
             	<name>yarn.scheduler.maximum-allocation-mb</name>
-        	<value>YARN_MODE_SCHE_MAX_MEM_REPLACE</value>
+        	<value>8192</value>
 	</property>
  	<property>
         	<name>yarn.scheduler.minimum-allocation-mb</name>
-        	<value>YARN_MODE_SCHE_MIN_MEM_REPLACE</value>
+        	<value>1024</value>
 	 </property>
  	<property>
         	<name>yarn.nodemanager.resource.cpu-vcores</name>
-        	<value>YARN_MODE_NODE_MNGR_MAX_CORES_REPLACE</value>
+        	<value>8</value>
 	</property>
  	<property>
         	<name>yarn.scheduler.maximum-allocation-vcores</name>
-        	<value>YARN_MODE_SCHE_MAX_CORES_REPLACE</value>
+        	<value>32</value>
 	 </property>
 </configuration>
