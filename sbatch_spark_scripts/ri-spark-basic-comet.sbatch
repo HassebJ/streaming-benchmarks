@@ -331,7 +331,8 @@ stop_data_load() {
 }
 
 config_all () {
-    node_offset=$(config_spark $node_offset)
+     rm -rf /var/tmp
+     node_offset=$(config_spark $node_offset)
  #   node_offset=$(config_redis $node_offset)
     node_offset=$(config_kafka $node_offset )
     node_offset=$(config_zk $node_offset)
@@ -364,7 +365,7 @@ execute_all_kafka () {
 git_update_all (){
     cd ..
     git push
-    execute_all_kafka "git reset --hard HEAD; git pull"
+    execute_all_kafka "git reset --hard; git pull"
 }
 
 run() {
