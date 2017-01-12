@@ -169,6 +169,7 @@ run() {
 
   elif [ "START_ZK" = "$OPERATION" ];
   then
+    rm -rf /tmp/dev-storm-zookeeper
     start_if_needed dev_zookeeper ZooKeeper 10 "$STORM_DIR/bin/storm" dev-zookeeper
   elif [ "STOP_ZK" = "$OPERATION" ];
   then
@@ -176,6 +177,7 @@ run() {
     rm -rf /tmp/dev-storm-zookeeper
   elif [ "START_REDIS" = "$OPERATION" ];
   then
+    rm -f dump.rdb
     start_if_needed redis-server Redis 1 "$REDIS_DIR/src/redis-server"
     cd data
     $LEIN run -n --configPath ../conf/benchmarkConf.yaml
@@ -215,6 +217,7 @@ run() {
     sleep 3 
   elif [ "START_KAFKA" = "$OPERATION" ];
   then
+    rm -rf /tmp/kafka-logs/
     assign_broker_id
     start_if_needed kafka\.Kafka Kafka 10 "$KAFKA_DIR/bin/kafka-server-start.sh" "$KAFKA_DIR/config/server.properties"
    sleep 7 
