@@ -361,6 +361,12 @@ execute_all_kafka () {
 
 }
 
+git_update_all (){
+    cd ..
+    git push
+    execute_all_kafka "git reset --hard HEAD; git pull"
+}
+
 run() {
   OPERATION=$1
   shift
@@ -373,6 +379,9 @@ run() {
   elif [ "iptof" = "$OPERATION" ];
   then
       write_hosts_to_file "$1"
+  elif [ "git_update_all" = "$OPERATION" ];
+  then
+      git_update_all
   elif [ "start_zk" = "$OPERATION" ];
   then
       start_zk
