@@ -232,7 +232,7 @@ config_kafka_all () {
     let "counts=1"
     for ip_addr in `cat $CONF_BENCHMARK/kafka`; do
         cd /home/javed.19/git-pull/$counts/streaming-benchmarks/sbatch_spark_scripts
-        ./ri-spark-basic-comet.sbatch config_all
+        ./ri-spark-basic-comet.sbatch config_kafka
         ((counts+=1))
     done
 }
