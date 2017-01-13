@@ -43,10 +43,15 @@ pid_match() {
 }
 assign_broker_id(){
    local BROKERID=`/sbin/ip -o addr show dev "eth0" | awk '$3 == "inet" {print $4}' | sed -r 's!/.*!!; s!.*\.!!'`
-#   local HOSTNAME=`/sbin/ip addr show ib0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1`
-   local HOSTNAME=`hostname -s`-ib
-   sed -i -e "s/host.name=.*/host.name=$HOSTNAME/g" $KAFKA_DIR/config/server.properties 
-   sed -i -e "s/broker.id=[0-9]*/broker.id=$BROKERID/g"  $KAFKA_DIR/config/server.properties
+    if [ "$1" = "ib" ];
+    then
+        local HOSTNAME=`hostname -s`-ib
+        sed -i -e "s/host.name=.*/host.name=$HOSTNAME/g" $KAFKA_DIR/config/server.properties 
+    else
+        local HOSTNAME=`hostname -s`
+        sed -i -e "s/host.name=.*/host.name=$HOSTNAME/g" $KAFKA_DIR/config/server.properties 
+    fi
+    sed -i -e "s/broker.id=[0-9]*/broker.id=$BROKERID/g"  $KAFKA_DIR/config/server.properties
 }
 start_if_needed() {
   local match="$1"
@@ -203,14 +208,14 @@ run() {
     stop_if_needed daemon.name=supervisor "Storm Supervisor"
     stop_if_needed daemon.name=ui "Storm UI"
     stop_if_needed daemon.name=logviewer "Storm LogViewer"
-  elif [ "START_KAFKA_TOPIC" = "$OPERATION" ];
+  elif [ "CREATE_KAFKA_TOPIC" = "$OPERATION" ];
   then
     create_kafka_topic
     sleep 10
   elif [ "START_KAFKA_WO_TOPIC" = "$OPERATION" ];
   then
     rm -rf /tmp/kafka-logs/
-    assign_broker_id
+    assign_broker_id $2
     start_if_needed kafka\.Kafka Kafka 10 "$KAFKA_DIR/bin/kafka-server-start.sh" "$KAFKA_DIR/config/server.properties"
     sleep 3 
   elif [ "START_KAFKA" = "$OPERATION" ];
@@ -384,7 +389,7 @@ then
 else
   while [ $# -gt 0 ];
   do
-    run "$1"
+    run "$@"
     shift
   done
 fi
