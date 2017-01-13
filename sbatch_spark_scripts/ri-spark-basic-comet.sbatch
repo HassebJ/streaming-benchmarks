@@ -235,7 +235,7 @@ config_kafka_dir () {
         ./ri-spark-basic-comet.sbatch config_kafka
         ((counts+=1))
     done
-    config_kafka 6
+    config_kafka_dir 6
 }
 
 config_all_dir () {
@@ -245,7 +245,7 @@ config_all_dir () {
         ./ri-spark-basic-comet.sbatch config_all
         ((counts+=1))
     done
-    config_kafka 6
+    config_all_dir 6
 }
 
 config_spark () {
