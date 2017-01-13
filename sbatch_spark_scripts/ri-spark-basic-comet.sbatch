@@ -228,13 +228,24 @@ config_kafka () {
 }
 
 
-config_kafka_all () {
+config_kafka_dir () {
     let "counts=1"
     for ip_addr in `cat $CONF_BENCHMARK/kafka`; do
         cd /home/javed.19/git-pull/$counts/streaming-benchmarks/sbatch_spark_scripts
         ./ri-spark-basic-comet.sbatch config_kafka
         ((counts+=1))
     done
+    config_kafka 6
+}
+
+config_all_dir () {
+    let "counts=1"
+    for ip_addr in `cat $CONF_BENCHMARK/kafka`; do
+        cd /home/javed.19/git-pull/$counts/streaming-benchmarks/sbatch_spark_scripts
+        ./ri-spark-basic-comet.sbatch config_all
+        ((counts+=1))
+    done
+    config_kafka 6
 }
 
 config_spark () {
@@ -373,9 +384,12 @@ git_update_all (){
 run() {
   OPERATION=$1
   shift
-  if [ "config_all" = "$OPERATION" ];
+  if [ "config_all_dir" = "$OPERATION" ];
   then
-      config_all
+      config_all_dir
+  elif [ "config_kafka_dir" = "$OPERATION" ];
+  then
+      config_kafka_dir
   elif [ "config_spark" = "$OPERATION" ];
   then
       config_spark 2
