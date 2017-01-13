@@ -60,8 +60,10 @@ write_hosts_to_file () {
     
     if [ "$ib_enabled" == "y" ];
     then
+        sed -i -e "s/#host.name=\.*/host.name=\.*/g" $CONF_KAFKA/server.properties
         node_name_suffix="-ib"
     else
+        sed -i -e "s/^host.name=\.*/#host.name=\.*/g" $CONF_KAFKA/server.properties
         node_name_suffix=""
     fi
 
