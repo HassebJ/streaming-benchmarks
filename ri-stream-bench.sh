@@ -30,7 +30,7 @@ SPARK_DIR="spark-$SPARK_VERSION-bin-hadoop2.6"
 
 ZK_HOST="localhost"
 ZK_PORT="2181"
-ZK_CONNECTIONS="storage14-ib:2181,storage15-ib:2181"
+ZK_CONNECTIONS="storage14:2181,storage15:2181"
 TOPIC=${TOPIC:-"ad-events"}
 PARTITIONS=${PARTITIONS:-5}
 LOAD=${LOAD:-16000}

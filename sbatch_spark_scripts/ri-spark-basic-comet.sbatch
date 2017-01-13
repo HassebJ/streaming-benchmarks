@@ -222,6 +222,8 @@ config_kafka () {
     yaml_kafka_connections=`echo $kafka_connections | sed -e "s/,/\"\r    - \"/g" | sed -e "s/^\"/   - \"/"`
 
     ex  $CONF_BENCHMARK/benchmarkConf.yaml -c ":%s/kafka.brokers:\(\n\s*-\s".*"\)*/kafka.brokers:\r $yaml_kafka_connections/g" -c ':wq!' > tmp
+   #jugaaaar
+     sed -i -e "s/ZK_CS_REPLACE/storage14:2181,storage15:2181/g" $HIBENCH_HOME/conf/hibench.conf
     echo $((total_kafka+1))
 }
 
@@ -342,7 +344,7 @@ config_all () {
 execute_all () {
 
     let "counts=1"
-    for ip_address in `cat $CONF_BENCHMARK/zk`; do 
+    for ip_address in `cat $CONF_BENCHMARK/kafka`; do 
    # while [ $counts -lt 6 ]; do
 #        $1
          ssh -t $ip_address "cd /home/javed.19/git-pull/finished/streaming-benchmarks; $1"
@@ -377,6 +379,9 @@ run() {
   elif [ "config_spark" = "$OPERATION" ];
   then
       config_spark 2
+  elif [ "config_zk" = "$OPERATION" ];
+  then
+      config_zk 9 
   elif [ "config_kafka" = "$OPERATION" ];
   then
       config_kafka 6 
@@ -396,6 +401,9 @@ run() {
   then
       start_kafka
       #check_kafka_running
+  elif [ "start_kafka_wo_topic_same" = "$OPERATION" ];
+  then
+      start_kafka_wo_topic_same
   elif [ "start_kafka_wo_topic" = "$OPERATION" ];
   then
       start_kafka_wo_topic
