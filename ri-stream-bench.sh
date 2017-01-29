@@ -17,7 +17,8 @@ SCALA_BIN_VERSION=${SCALA_BIN_VERSION:-"2.10"}
 SCALA_SUB_VERSION=${SCALA_SUB_VERSION:-"4"}
 #STORM_VERSION=${STORM_VERSION:-"0.9.7"}
 STORM_VERSION=${STORM_VERSION:-"1.0.1"}
-FLINK_VERSION=${FLINK_VERSION:-"1.1.3"}
+#FLINK_VERSION=${FLINK_VERSION:-"1.1.3"}
+FLINK_VERSION=${FLINK_VERSION:-"1.0.3"}
 SPARK_VERSION=${SPARK_VERSION:-"2.0.2"}
 STORM_DIR="apache-storm-$STORM_VERSION"
 REDIS_DIR="redis-$REDIS_VERSION"
@@ -176,6 +177,7 @@ run() {
     elif [ "START_ZK" = "$OPERATION" ];
     then
         rm -rf /tmp/dev-storm-zookeeper
+        #rm -rf /tmp/zookeeper
         start_if_needed dev_zookeeper ZooKeeper 10 "$STORM_DIR/bin/storm" dev-zookeeper
     elif [ "STOP_ZK" = "$OPERATION" ];
     then
@@ -197,14 +199,16 @@ run() {
         rm -rf /tmp/storm
         start_if_needed daemon.name=supervisor "Storm Supervisor" 3 "$STORM_DIR/bin/storm" supervisor
         start_if_needed daemon.name=logviewer "Storm LogViewer" 3 "$STORM_DIR/bin/storm" logviewer
-        sleep 7
+        sleep 20
     elif [ "START_STORM_MASTER" = "$OPERATION" ];
     then
         rm -rf /tmp/storm
-        start_if_needed daemon.name=nimbus "Storm Nimbus" 3 "$STORM_DIR/bin/storm" nimbus
+        rm -rf $STORM_DIR/logs/*
+        
+        start_if_needed daemon.name=supervisor "Storm Supervisor" 3 "$STORM_DIR/bin/storm" nimbus    
         start_if_needed daemon.name=ui "Storm UI" 3 "$STORM_DIR/bin/storm" ui
         start_if_needed daemon.name=logviewer "Storm LogViewer" 3 "$STORM_DIR/bin/storm" logviewer
-        sleep 5
+        sleep 20
     elif [ "STOP_STORM" = "$OPERATION" ];
     then
         stop_if_needed daemon.name=nimbus "Storm Nimbus"
@@ -234,7 +238,7 @@ run() {
         rm -rf /tmp/kafka-logs/
     elif [ "START_FLINK" = "$OPERATION" ];
     then
-        start_if_needed org.apache.flink.runtime.jobmanager.JobManager Flink 1 $FLINK_DIR/bin/start-local.sh
+        start_if_needed org.apache.flink.runtime.jobmanager.JobManager Flink 1 $FLINK_DIR/bin/start-cluster.sh
     elif [ "STOP_FLINK" = "$OPERATION" ];
     then
         $FLINK_DIR/bin/stop-local.sh
@@ -391,9 +395,9 @@ if [ $# -lt 1 ];
 then
     run "HELP"
 else
-    while [ $# -gt 0 ];
-    do
+  #  while [ $# -gt 0 ];
+  #  do
         run "$1"
         shift
-    done
+   # done
 fi

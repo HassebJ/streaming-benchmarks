@@ -270,7 +270,7 @@ config_spark () {
     fi
     master=`cat ~/myhostnames | head -1`
     f_master=`echo $master | sed -e "s/-ib//g"`
-    spark_master="spark\/\/$f_master:7077"
+    spark_master="spark:\/\/$f_master:7077"
     
     sed -i  "s/hibench.spark.master .*/hibench.spark.master          $spark_master/g" $HIBENCH_HOME/conf/spark.conf
 
@@ -307,7 +307,9 @@ ib_enabled=$1
     fi
  orig_master=`cat ~/myhostnames | head -1`
     master=$orig_master"$node_name_suffix"
-    
+     sed -i -e "s/.*storm.local.hostname:.*/#storm.local.hostname: \"$HOSTNAME\"/g" $CONF_STORM/storm.yaml
+
+   
     sed -i -e "s/hibench.streambench.storm.nimbus .*/hibench.streambench.storm.nimbus        $master/g" $HIBENCH_HOME/conf/storm.conf                                                 
     storm_hosts=`cat $CONF_SPARK/conf/slaves`
     storm_connections=`echo $storm_hosts | sed -e "s/\s/:9092,/g" | sed -e "s/$/:9092/"`    
@@ -333,25 +335,25 @@ ib_enabled=$1
         node_name_suffix=""
     fi
  orig_master=`cat ~/myhostnames | head -1`
-    master=$orig_master"$node_name_suffix"
+    master=$orig_master
 
-       sed -i -e "s/jobmanager.rpc.address: .*/jobmanager.rpc.address:      $master/g" $CONF_FLINK/conf/flink-conf.yaml
-   echo $master > $CONF_FLINK/conf/master
-cp $CONF_SPARK/conf/slaves $CONF_FLINK/conf/
-    
-   sed -i -e "s/hibench.flink.master .*/bench.flink.master       $master:6123/g" $HIBENCH_HOME/conf/storm.conf                                
+       sed -i -e "s/jobmanager.rpc.address: .*/jobmanager.rpc.address: $master/g" $CONF_FLINK/flink-conf.yaml
+   echo $master > $CONF_FLINK/master
+cp $CONF_SPARK/conf/slaves $CONF_FLINK/
+   ip_master=`cat /etc/hosts | grep -w "$master.cluster" | gawk --field-separator=' ' '{ print $1 }'` 
+   sed -i -e "s/hibench.flink.master .*/hibench.flink.master       $ip_master:6123/g" $HIBENCH_HOME/conf/flink.conf   
 }
 
 start_storm_cluster () {
     truncate -s 0 $BENCHMARK_HOME/storm-load.out
     cd $BENCHMARK_HOME
-    ip_addr_local=`hostname -s`
-    assign_storm_hostname "$1" "$ip_addr_local"
+    local_ip=`hostname -s`
+    #assign_storm_hostname "$1" "$local_ip"
     ./ri-stream-bench.sh START_STORM_MASTER "$1"
+    sleep 2
     command="./ri-stream-bench.sh START_STORM_SLAVE $1"
     for ip_addr in `cat $CONF_SPARK/conf/slaves`; do
-     #   ssh -t $ip_addr "cd $BENCHMARK_HOME; nohup $command >> storm-load.outdd"
-     assign_storm_hostname "$1" "$ip_addr"
+    # assign_storm_hostname "$1" "$ip_addr"
        ssh -t $ip_addr "cd $BENCHMARK_HOME; nohup $command >> storm-load.out"
         ((counts+=1))
     done
@@ -368,9 +370,15 @@ assign_storm_hostname(){
     else
         HOSTNAME="$2"
     fi
-        sed -i -e "s/storm.local.hostname:.*/storm.local.hostname: \"$HOSTNAME\"/g" $CONF_STORM/storm.yaml
+        sed -i -e "s/.*storm.local.hostname:.*/storm.local.hostname: \"$HOSTNAME\"/g" $CONF_STORM/storm.yaml
 
 }
+
+start_flink_cluster(){
+    cd $BENCHMARK_HOME
+    ./ri-stream-bench.sh START_FLINK
+}
+
 
 #start_spark
 start_spark_cluster () {
@@ -379,6 +387,8 @@ start_spark_cluster () {
         ./spark-2.0.2-bin-hadoop2.7/sbin/start-all.sh
 
 }
+
+
  
 #star spark processing
 start_spark_processing (){
@@ -437,7 +447,7 @@ config_all () {
 execute_all () {
 
     let "counts=1"
-    for ip_address in `cat $CONF_BENCHMARK/kafka`; do 
+    for ip_address in `cat $CONF_SPARK/conf/slaves`; do 
    # while [ $counts -lt 6 ]; do
 #        $1
          ssh -t $ip_address "cd /home/javed.19/git-pull/finished/streaming-benchmarks; $1"
@@ -518,6 +528,9 @@ run() {
   elif [ "start_storm_cluster" = "$OPERATION" ];
   then
       start_storm_cluster  "$1"
+  elif [ "start_flink_cluster" = "$OPERATION" ];
+  then
+      start_flink_cluster
   elif [ "start_spark_processing" = "$OPERATION" ];
   then
       start_spark_processing

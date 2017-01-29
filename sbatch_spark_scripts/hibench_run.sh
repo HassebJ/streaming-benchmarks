@@ -25,8 +25,8 @@ eth_bench (){
         ./ri-spark-basic-comet.sbatch start_spark_cluster
     elif [[ $framework_name = "storm" ]]; then
         ./ri-spark-basic-comet.sbatch config_storm n
-        ./ri-spark-basic-comet.sbatch start_storm_cluster n 
-        export STORM_HOME=/home/javed.19/git-pull/finished/streaming-benchmarks/apache-storm-1.0.1
+    #    ./ri-spark-basic-comet.sbatch start_storm_cluster n 
+    #    export STORM_HOME=/home/javed.19/git-pull/finished/streaming-benchmarks/apache-storm-1.0.1
     elif [[ $framework_name = "flink" ]]; then
         ./ri-spark-basic-comet.sbatch config_flink n
         ./ri-spark-basic-comet.sbatch start_flink_cluster
@@ -37,7 +37,9 @@ eth_bench (){
     generate_data_benchmark=bin/workloads/streaming/$bench_name/prepare/dataGen.sh
     start_framework_processing=bin/workloads/streaming/$bench_name/$framework_name/run.sh
 
-    $generate_data_benchmark & $start_framework_processing && fg
+    $generate_data_benchmark & 
+    sleep 4
+    $start_framework_processing && fg
 }
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<IPOIB>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ipoib_bench(){
@@ -82,7 +84,9 @@ ipoib_bench(){
     generate_data_benchmark=bin/workloads/streaming/$bench_name/prepare/dataGen.sh
     start_framework_processing=bin/workloads/streaming/$bench_name/$framework_name/run.sh
 
-    $generate_data_benchmark & $start_framework_processing && fg
+    $generate_data_benchmark & 
+    sleep 7
+    $start_framework_processing && fg
     PID=$!
     sleep 21m
 
