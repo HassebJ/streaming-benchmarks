@@ -228,7 +228,7 @@ run() {
     elif [ "START_KAFKA" = "$OPERATION" ];
     then
         rm -rf /tmp/kafka-logs/
-        assign_broker_id "@"
+        assign_broker_id "$@"
         start_if_needed kafka\.Kafka Kafka 10 "$KAFKA_DIR/bin/kafka-server-start.sh" "$KAFKA_DIR/config/server.properties"
         sleep 7 
         create_kafka_topic
