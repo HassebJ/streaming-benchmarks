@@ -33,9 +33,9 @@ eth_bench (){
     fi
 
 
-    cd /home/javed.19/git-pull/finished/HiBench
-    generate_data_benchmark=bin/workloads/streaming/$bench_name/prepare/dataGen.sh
-    start_framework_processing=bin/workloads/streaming/$bench_name/$framework_name/run.sh
+   # cd /home/javed.19/git-pull/finished/HiBench
+   # generate_data_benchmark=bin/workloads/streaming/$bench_name/prepare/dataGen.sh
+   # start_framework_processing=bin/workloads/streaming/$bench_name/$framework_name/run.sh
 
     $generate_data_benchmark & 
     sleep 4
@@ -85,12 +85,12 @@ ipoib_bench(){
     start_framework_processing=bin/workloads/streaming/$bench_name/$framework_name/run.sh
 
     $generate_data_benchmark & 
-    sleep 7
+    sleep 4
     $start_framework_processing && fg
-    PID=$!
-    sleep 21m
+   # PID=$!
+   # sleep 21m
 
-    kill $PID
+   # kill $PID
 
 }
 

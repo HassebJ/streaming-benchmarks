@@ -1,31 +1,17 @@
-[?1049h[?1h=[1;42r[?12;25h[?12l[?25h[?25l[42;1HE325: ATTENTION
-Found a swap file by the name "~/git-pull/finished/streaming-benchmarks/conf/.
-[41;79Hb[42;1HenchmarkConf.yaml.swp"
-          owned by: javed.19   dated: Thu Dec  8 22:10:15 2016
-         file name: ~javed.19/git-pull/finished/streaming-benchmarks/conf/benc
-[41;79Hh[42;1HmarkConf.yaml
-          modified: YES
-         user name: javed.19   host name: node001.cluster
-        process ID: 18683
-While opening file "/home/javed.19/git-pull/finished/streaming-benchmarks/conf
-[41;79H/[42;1HbenchmarkConf.yaml"
-             dated: Thu Jan 12 21:28:09 2017
-      NEWER than swap file!
-
-(1) Another program may be editing the same file.
-    If this is the case, be careful not to end up with two
-    different instances of the same file when making changes.
-    Quit, or continue with caution.
-
-(2) An edit session for this file crashed.
-    If this is the case, use ":recover" or "vim -r /home/javed.19/git-pull/fin
-[41;79Hi[42;1Hshed/streaming-benchmarks/conf/benchmarkConf.yaml"
-    to recover the changes (see ":help recovery").
-    If you did this already, delete the swap file "/home/javed.19/git-pull/fin
-[41;79Hi[42;1Hshed/streaming-benchmarks/conf/.benchmarkConf.yaml.swp"
-    to avoid this message.
-
-"~/git-pull/finished/streaming-benchmarks/conf/benchmarkConf.yaml" "~/git-pull/finished/streaming-benchmarks/conf/benchmarkConf.yaml" 26L, 499C
-"~/git-pull/finished/streaming-benchmarks/conf/benchmarkConf.yaml" "~/git-pull/finished/streaming-benchmarks/conf/benchmarkConf.yaml" 26L, 499C w
-[41;79Hr[42;1Hitten
-[?1l>[?12l[?25h[?1049l
+[?1049h[?1h=[1;42r[?12;25h[?12l[?25h[?25l[42;1H"/var/tmp/apache-storm-1.0.1/conf/storm.yaml" [New DIRECTORY]
+Error detected while processing command line:
+E486: Pattern not found: .*storm.zookeeper.servers:\(\n\s*-\s.*\)*
+"/var/tmp/apache-storm-1.0.1/conf/storm.yaml" 
+"/var/tmp/apache-storm-1.0.1/conf/storm.yaml" E212: Can't open file for writing 
+Entering Ex mode.  Type "visual" to go to Normal mode.[?12l[?25h
+:^X
+:^X
+:
+:
+:
+:
+:
+:
+:
+:^V
+:

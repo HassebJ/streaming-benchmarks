@@ -20,7 +20,7 @@ STORM_VERSION=${STORM_VERSION:-"1.0.1"}
 #FLINK_VERSION=${FLINK_VERSION:-"1.1.3"}
 FLINK_VERSION=${FLINK_VERSION:-"1.0.3"}
 SPARK_VERSION=${SPARK_VERSION:-"2.0.2"}
-STORM_DIR="apache-storm-$STORM_VERSION"
+STORM_DIR="/var/tmp/apache-storm-$STORM_VERSION"
 REDIS_DIR="redis-$REDIS_VERSION"
 KAFKA_DIR="kafka_$SCALA_BIN_VERSION-$KAFKA_VERSION"
 FLINK_DIR="flink-$FLINK_VERSION"
@@ -196,19 +196,19 @@ run() {
         rm -f dump.rdb
     elif [ "START_STORM_SLAVE" = "$OPERATION" ];
     then
-        rm -rf /tmp/storm
+        rm -rf /var/tmp/storm
         start_if_needed daemon.name=supervisor "Storm Supervisor" 3 "$STORM_DIR/bin/storm" supervisor
         start_if_needed daemon.name=logviewer "Storm LogViewer" 3 "$STORM_DIR/bin/storm" logviewer
-        sleep 20
+        #sleep 20
     elif [ "START_STORM_MASTER" = "$OPERATION" ];
     then
-        rm -rf /tmp/storm
+        rm -rf /var/tmp/storm
         rm -rf $STORM_DIR/logs/*
         
         start_if_needed daemon.name=supervisor "Storm Supervisor" 3 "$STORM_DIR/bin/storm" nimbus    
         start_if_needed daemon.name=ui "Storm UI" 3 "$STORM_DIR/bin/storm" ui
         start_if_needed daemon.name=logviewer "Storm LogViewer" 3 "$STORM_DIR/bin/storm" logviewer
-        sleep 20
+        sleep 2
     elif [ "STOP_STORM" = "$OPERATION" ];
     then
         stop_if_needed daemon.name=nimbus "Storm Nimbus"

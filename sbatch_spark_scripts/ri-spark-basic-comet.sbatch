@@ -33,7 +33,8 @@ HIBENCH_HOME=$BENCHMARK_HOME/../HiBench
 CONF_SPARK_DEFAULT=$WORKDIR/spark_release_confs/spark
 CONF_BENCHMARK=$BENCHMARK_HOME/conf
 CONF_SPARK=$HIBENCH_HOME/spark-2.0.2-bin-hadoop2.7
-CONF_STORM=$BENCHMARK_HOME/apache-storm-1.0.1/conf
+#CONF_STORM=$BENCHMARK_HOME/apache-storm-1.0.1/conf
+CONF_STORM=/var/tmp/apache-storm-1.0.1/conf
 CONF_FLINK=$BENCHMARK_HOME/flink-1.0.3/conf
 CONF_KAFKA=$BENCHMARK_HOME/kafka_2.10-0.8.2.1/config
 
