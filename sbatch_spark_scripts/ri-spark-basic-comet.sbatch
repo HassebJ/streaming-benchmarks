@@ -258,7 +258,7 @@ config_all_dir () {
    }
 
 config_spark () {
-    rm -rf /var/tmp/
+  #  rm -rf /var/tmp/
     let total_spark=$1+num_spark-1
      cat ~/myhostnames | sed -n "$1,$total_spark p" > $CONF_SPARK/conf/slaves
     cp $CONF_SPARK/conf/slaves $HIBENCH_HOME/spark-2.0.2-bin-hadoop2.7/conf/
@@ -437,7 +437,7 @@ stop_data_load() {
 }
 
 config_all () {
-     rm -rf /var/tmp
+   #  rm -rf /var/tmp
      node_offset=$(config_spark $node_offset)
  #   node_offset=$(config_redis $node_offset)
     node_offset=$(config_kafka $node_offset )
