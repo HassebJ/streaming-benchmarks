@@ -502,7 +502,7 @@ run() {
       config_zk 9 
   elif [ "config_kafka" = "$OPERATION" ];
   then
-      config_kafka 6 
+      config_kafka 8 
   elif [ "iptof" = "$OPERATION" ];
   then
       write_hosts_to_file "$1"
