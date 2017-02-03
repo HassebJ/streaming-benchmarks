@@ -33,8 +33,8 @@ HIBENCH_HOME=$BENCHMARK_HOME/../HiBench
 CONF_SPARK_DEFAULT=$WORKDIR/spark_release_confs/spark
 CONF_BENCHMARK=$BENCHMARK_HOME/conf
 CONF_SPARK=$HIBENCH_HOME/spark-2.0.2-bin-hadoop2.7
-#CONF_STORM=$BENCHMARK_HOME/apache-storm-1.0.1/conf
-CONF_STORM=/var/tmp/apache-storm-1.0.1/conf
+CONF_STORM=$BENCHMARK_HOME/apache-storm-1.0.1/conf
+#CONF_STORM=/var/tmp/apache-storm-1.0.1/conf
 CONF_FLINK=$BENCHMARK_HOME/flink-1.0.3/conf
 CONF_KAFKA=$BENCHMARK_HOME/kafka_2.10-0.8.2.1/config
 
@@ -350,8 +350,8 @@ start_storm_cluster () {
     cd $BENCHMARK_HOME
     local_ip=`hostname -s`
     #assign_storm_hostname "$1" "$local_ip"
-    ./ri-stream-bench.sh START_STORM_MASTER "$1"
-    sleep 2
+  #  ./ri-stream-bench.sh START_STORM_MASTER "$1"
+    #sleep 2
     command="./ri-stream-bench.sh START_STORM_SLAVE $1"
     for ip_addr in `cat $CONF_SPARK/conf/slaves`; do
     # assign_storm_hostname "$1" "$ip_addr"
@@ -440,15 +440,17 @@ config_all () {
    #  rm -rf /var/tmp
      node_offset=$(config_spark $node_offset)
  #   node_offset=$(config_redis $node_offset)
-    node_offset=$(config_kafka $node_offset )
-    node_offset=$(config_zk $node_offset)
+#    node_offset=$(config_kafka $node_offset )
+     config_kafka 8 
+    node_offset=$(config_zk 9)
 
 }
 
 execute_all () {
 
     let "counts=1"
-    for ip_address in `cat $CONF_SPARK/conf/slaves`; do 
+   # for ip_address in `cat $CONF_SPARK/conf/slaves`; do 
+    for ip_address in `head -5 ~/myhostnames`; do
    # while [ $counts -lt 6 ]; do
 #        $1
          ssh -t $ip_address "cd /home/javed.19/git-pull/finished/streaming-benchmarks; $1"
