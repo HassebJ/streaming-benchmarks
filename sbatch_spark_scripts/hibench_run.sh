@@ -25,17 +25,18 @@ eth_bench (){
         ./ri-spark-basic-comet.sbatch start_spark_cluster
     elif [[ $framework_name = "storm" ]]; then
         ./ri-spark-basic-comet.sbatch config_storm n
-    #    ./ri-spark-basic-comet.sbatch start_storm_cluster n 
-    #    export STORM_HOME=/home/javed.19/git-pull/finished/streaming-benchmarks/apache-storm-1.0.1
+        ./ri-spark-basic-comet.sbatch execute_all "./ri-spark-basic-comet.sbatch config_storm n"
+        #    ./ri-spark-basic-comet.sbatch start_storm_cluster n 
+        export STORM_HOME=/var/tmp/apache-storm-1.0.1
     elif [[ $framework_name = "flink" ]]; then
         ./ri-spark-basic-comet.sbatch config_flink n
         ./ri-spark-basic-comet.sbatch start_flink_cluster
     fi
 
 
-   # cd /home/javed.19/git-pull/finished/HiBench
-   # generate_data_benchmark=bin/workloads/streaming/$bench_name/prepare/dataGen.sh
-   # start_framework_processing=bin/workloads/streaming/$bench_name/$framework_name/run.sh
+    # cd /home/javed.19/git-pull/finished/HiBench
+    # generate_data_benchmark=bin/workloads/streaming/$bench_name/prepare/dataGen.sh
+    # start_framework_processing=bin/workloads/streaming/$bench_name/$framework_name/run.sh
 
     $generate_data_benchmark & 
     sleep 4
@@ -65,15 +66,17 @@ ipoib_bench(){
 
     ./ri-spark-basic-comet.sbatch start_kafka_wo_topic ib
 
-    
+
     ./ri-spark-basic-comet.sbatch config_spark y
 
     if [[ $framework_name = "spark" ]]; then
         ./ri-spark-basic-comet.sbatch start_spark_cluster
     elif [[ $framework_name = "storm" ]]; then
         ./ri-spark-basic-comet.sbatch config_storm y
-        ./ri-spark-basic-comet.sbatch start_storm_cluster y
-        export STORM_HOME=/home/javed.19/git-pull/finished/streaming-benchmarks/apache-storm-1.0.1
+        # ./ri-spark-basic-comet.sbatch start_storm_cluster y
+        ./ri-spark-basic-comet.sbatch config_storm y    
+        ./ri-spark-basic-comet.sbatch execute_all "./ri-spark-basic-comet.sbatch config_storm y" 
+        export STORM_HOME=/var/tmp/apache-storm-1.0.1
     elif [[ $framework_name = "flink" ]]; then
         ./ri-spark-basic-comet.sbatch config_flink y
         ./ri-spark-basic-comet.sbatch start_flink_cluster
@@ -84,13 +87,13 @@ ipoib_bench(){
     generate_data_benchmark=bin/workloads/streaming/$bench_name/prepare/dataGen.sh
     start_framework_processing=bin/workloads/streaming/$bench_name/$framework_name/run.sh
 
-    $generate_data_benchmark & 
-    sleep 4
-    $start_framework_processing && fg
-   # PID=$!
-   # sleep 21m
+    #$generate_data_benchmark & 
+    #sleep 4
+    #$start_framework_processing && fg
+    # PID=$!
+    # sleep 21m
 
-   # kill $PID
+    # kill $PID
 
 }
 

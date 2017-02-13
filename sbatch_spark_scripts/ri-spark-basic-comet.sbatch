@@ -307,7 +307,7 @@ ib_enabled=$1
         node_name_suffix=""
     fi
  orig_master=`cat ~/myhostnames | head -1`
-    master=$orig_master"$node_name_suffix"
+    master=$orig_master
      sed -i -e "s/.*storm.local.hostname:.*/#storm.local.hostname: \"$HOSTNAME\"/g" $CONF_STORM/storm.yaml
 
    
@@ -354,7 +354,7 @@ start_storm_cluster () {
     #sleep 2
     command="./ri-stream-bench.sh START_STORM_SLAVE $1"
     for ip_addr in `cat ~/myhostnames | sed -n "2,7 p"`; do
-         assign_storm_hostname "$1" "$ip_addr"
+#         assign_storm_hostname "$1" "$ip_addr"
        ssh -t $ip_addr "cd $BENCHMARK_HOME; nohup $command >> storm-load.out"
         ((counts+=1))
     done
@@ -450,10 +450,10 @@ execute_all () {
 
     let "counts=1"
    # for ip_address in `cat $CONF_SPARK/conf/slaves`; do 
-    for ip_address in `head -5 ~/myhostnames`; do
+    for ip_address in `cat ~/myhostnames | sed -n "2,7 p"`; do
    # while [ $counts -lt 6 ]; do
 #        $1
-         ssh -t $ip_address "cd /home/javed.19/git-pull/finished/streaming-benchmarks; $1"
+         ssh -t $ip_address "cd /home/javed.19/git-pull/finished/streaming-benchmarks;cd sbatch_spark_scripts; $1"
         ((counts+=1))
     done
 

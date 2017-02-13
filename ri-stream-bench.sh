@@ -27,7 +27,7 @@ FLINK_DIR="flink-$FLINK_VERSION"
 SPARK_DIR="spark-$SPARK_VERSION-bin-hadoop2.6"
 
 #Get one of the closet apache mirrors
-#APACHE_MIRROR=$(curl 'https://www.apache.org/dyn/closer.cgi' |   grep -o '<strong>[^<]*</strong>' |   sed 's/<[^>]*>//g' |   head -1)
+APACHE_MIRROR="http://archive.apache.org/dist/"
 
 ZK_HOST="localhost"
 ZK_PORT="2181"
@@ -53,6 +53,15 @@ assign_broker_id(){
         sed -i -e "s/host.name=.*/host.name=$HOSTNAME/g" $KAFKA_DIR/config/server.properties 
     fi
     sed -i -e "s/broker.id=[0-9]*/broker.id=$BROKERID/g"  $KAFKA_DIR/config/server.properties
+}
+assign_storm_hostname(){
+    HOSTNAME=`hostname -s`
+    if [ "$2" = "y" ];
+    then
+        HOSTNAME=$HOSTNAME"-ib"
+    fi
+    sed -i -e "s/.*storm.local.hostname:.*/storm.local.hostname: \"$HOSTNAME\"/g" $STORM_DIR/conf/storm.yaml
+
 }
 
 start_if_needed() {
@@ -178,6 +187,7 @@ run() {
     then
         rm -rf /tmp/dev-storm-zookeeper
         #rm -rf /tmp/zookeeper
+       # ./kafka_2.10-0.8.2.1/bin/zookeeper-server-start.sh kafka_2.10-0.8.2.1/config/zookeeper.properties > kafka_2.10-0.8.2.1/logs/dmn &
         start_if_needed dev_zookeeper ZooKeeper 10 "$STORM_DIR/bin/storm" dev-zookeeper
     elif [ "STOP_ZK" = "$OPERATION" ];
     then
@@ -197,15 +207,16 @@ run() {
     elif [ "START_STORM_SLAVE" = "$OPERATION" ];
     then
         #rm -rf /tmp/storm
-        #rm -rf $STORM_DIR/logs/*
+        assign_storm_hostname "$@" 
+        rm -rf $STORM_DIR/logs/*
         start_if_needed daemon.name=supervisor "Storm Supervisor" 3 "$STORM_DIR/bin/storm" supervisor
         start_if_needed daemon.name=logviewer "Storm LogViewer" 3 "$STORM_DIR/bin/storm" logviewer
-        #sleep 20
+        sleep 20
     elif [ "START_STORM_MASTER" = "$OPERATION" ];
     then
         rm -rf /tmp/storm
         rm -rf $STORM_DIR/logs/*
-        
+        assign_storm_hostname "$@"
         start_if_needed daemon.name=supervisor "Storm Supervisor" 3 "$STORM_DIR/bin/storm" nimbus    
         start_if_needed daemon.name=ui "Storm UI" 3 "$STORM_DIR/bin/storm" ui
         start_if_needed daemon.name=logviewer "Storm LogViewer" 3 "$STORM_DIR/bin/storm" logviewer
@@ -396,9 +407,9 @@ if [ $# -lt 1 ];
 then
     run "HELP"
 else
-  #  while [ $# -gt 0 ];
-  #  do
-        run "$@"
-        shift
-   # done
+    #  while [ $# -gt 0 ];
+    #  do
+    run "$@"
+    shift
+    # done
 fi
