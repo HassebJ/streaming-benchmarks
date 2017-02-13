@@ -43,7 +43,7 @@ pid_match() {
     echo $VAL
 }
 assign_broker_id(){
-    local BROKERID=`/sbin/ip -o addr show dev "eth0" | awk '$3 == "inet" {print $4}' | sed -r 's!/.*!!; s!.*\.!!'`
+    local BROKERID=`/sbin/ip -o addr show dev "en0" | awk '$3 == "inet" {print $4}' | sed -r 's!/.*!!; s!.*\.!!'`
     if [ "$2" = "ib" ];
     then
         local HOSTNAME=`hostname -s`-ib
