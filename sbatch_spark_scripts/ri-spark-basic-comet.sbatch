@@ -16,13 +16,13 @@ export WORKDIR=`pwd`
 #this load on 7 nodes produces 100k net
 load=14286
 
-WORKER_MEM_SPARK="10g"
-DAEMON_MEM_SPARK="2g"
+WORKER_MEM_SPARK="100g"
+DAEMON_MEM_SPARK="50g"
 WORKER_CORES_SPARK=`grep "core id" /proc/cpuinfo | wc -l`
 SSD_PATH_BASE=/scratch/
 node_offset=2
 num_zk=2
-num_kafka=3
+num_kafka=4
 num_spark=4
 num_redis=1
 #--------------------------------
@@ -439,10 +439,10 @@ stop_data_load() {
 config_all () {
    #  rm -rf /var/tmp
      node_offset=$(config_spark $node_offset)
- #   node_offset=$(config_redis $node_offset)
-#    node_offset=$(config_kafka $node_offset )
-     config_kafka 8 
-    node_offset=$(config_zk 9)
+#    node_offset=$(config_redis $node_offset)
+#    node_offset=$(config_kafka $node_offset)
+     config_kafka 7
+     node_offset=$(config_zk 9)
 
 }
 
@@ -450,7 +450,7 @@ execute_all () {
 
     let "counts=1"
    # for ip_address in `cat $CONF_SPARK/conf/slaves`; do 
-    for ip_address in `cat ~/myhostnames | sed -n "2,7 p"`; do
+    for ip_address in `cat ~/myhostnames`; do
    # while [ $counts -lt 6 ]; do
 #        $1
          ssh -t $ip_address "cd /home/javed.19/git-pull/finished/streaming-benchmarks;cd sbatch_spark_scripts; $1"
@@ -459,10 +459,10 @@ execute_all () {
 
 }
 
-execute_all_kafka () {
+execute_all_storm () {
 
     let "counts=1"
-    for ip_address in `cat $CONF_BENCHMARK/kafka`; do 
+    for ip_address in `cat ~/myhostnames | sed -n "2,7 p"`; do 
 #        $1
          ssh -t $ip_address "cd /home/javed.19/git-pull/$counts/streaming-benchmarks; $1"
         ((counts+=1))

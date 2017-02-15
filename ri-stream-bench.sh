@@ -31,7 +31,7 @@ APACHE_MIRROR="http://archive.apache.org/dist/"
 
 ZK_HOST="localhost"
 ZK_PORT="2181"
-ZK_CONNECTIONS="storage14:2181,storage15:2181"
+ZK_CONNECTIONS="storage19:2181,storage20:2181"
 TOPIC=${TOPIC:-"ad-events"}
 PARTITIONS=${PARTITIONS:-5}
 LOAD=${LOAD:-16000}

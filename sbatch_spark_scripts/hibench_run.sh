@@ -87,9 +87,9 @@ ipoib_bench(){
     generate_data_benchmark=bin/workloads/streaming/$bench_name/prepare/dataGen.sh
     start_framework_processing=bin/workloads/streaming/$bench_name/$framework_name/run.sh
 
-    #$generate_data_benchmark & 
-    #sleep 4
-    #$start_framework_processing && fg
+   # $generate_data_benchmark & 
+   # sleep 4
+   # $start_framework_processing && fg
     # PID=$!
     # sleep 21m
 

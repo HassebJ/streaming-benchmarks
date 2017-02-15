@@ -20,7 +20,7 @@ export MYUSER=javed
 if [ x$JAVA_HOME == x"" ]
 then
     echo "Setting JAVA_HOME!"
-    export JAVA_HOME=/home/luxi/util/jdk1.7.0
+    export JAVA_HOME=/home/javed.19/openjdk-1.7.0
 fi
 export WORKDIR=`pwd`
 BENCHMARK_HOME=$(readlink -f $WORKDIR/../../HiBench)
