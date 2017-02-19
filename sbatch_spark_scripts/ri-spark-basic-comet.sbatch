@@ -201,7 +201,7 @@ config_zk () {
     sed -i -e "s/zookeeper.connect=.*/zookeeper.connect=$zk_connections/g" $CONF_KAFKA/consumer.properties
     zk_connections_wo_quote=`echo $zk_connections | sed -e "s/\"//g"`
     sed -i -e "s/zookeeper.connect=.*/zookeeper.connect=$zk_connections_wo_quote/g" $CONF_KAFKA/server.properties
-    sed -i -e "s/ZK_CS_REPLACE/$zk_connections_wo_quote/g" $HIBENCH_HOME/conf/hibench.conf 
+    sed -i -e "s/.*hibench.streambench.zkHost.*/hibench.streambench.zkHost   $zk_connections_wo_quote/g" $HIBENCH_HOME/conf/hibench.conf 
     #write connection string to benchmark benchMark.yaml
     ex $CONF_BENCHMARK/benchmarkConf.yaml -c ":%s/zookeeper.servers:\(\n\s*-\s".*"\)*/zookeeper.servers:\r    - $zk_connections/g" -c ':wq!' > tmp
     #convert cs to yaml format
@@ -232,7 +232,10 @@ config_kafka () {
 
     ex  $CONF_BENCHMARK/benchmarkConf.yaml -c ":%s/kafka.brokers:\(\n\s*-\s".*"\)*/kafka.brokers:\r $yaml_kafka_connections/g" -c ':wq!' > tmp
    #jugaaaar
-     sed -i -e "s/ZK_CS_REPLACE/storage14:2181,storage15:2181/g" $HIBENCH_HOME/conf/hibench.conf
+  # iptof n
+   ./ri-spark-basic-comet.sbatch config_zk
+  # iptof y
+  # sed -i -e "s/ZK_CS_REPLACE/storage14:2181,storage15:2181/g" $HIBENCH_HOME/conf/hibench.conf
     echo $((total_kafka+1))
 }
 
