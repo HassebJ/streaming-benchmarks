@@ -1,0 +1,111 @@
+127.0.0.1	localhost.localdomain	localhost
+
+10.3.1.101	fpga01-ib.cluster	fpga01-ib
+10.1.1.101	fpga01.cluster	fpga01
+10.2.1.101	fpga01-ipmi.cluster	fpga01-ipmi
+10.3.1.102	fpga02-ib.cluster	fpga02-ib
+10.1.1.102	fpga02.cluster	fpga02
+10.2.1.102	fpga02-ipmi.cluster	fpga02-ipmi
+10.3.1.1	gpu01-ib.cluster	gpu01-ib	gpu01.cluster   gpu01
+10.2.1.1	gpu01-ipmi.cluster	gpu01-ipmi
+10.3.1.2	gpu02-ib.cluster	gpu02-ib	gpu02.cluster   gpu02
+10.2.1.2	gpu02-ipmi.cluster	gpu02-ipmi
+10.3.1.3	gpu03-ib.cluster	gpu03-ib	gpu03.cluster   gpu03
+10.2.1.3	gpu03-ipmi.cluster	gpu03-ipmi
+10.3.1.4	gpu04-ib.cluster	gpu04-ib	gpu04.cluster   gpu04
+10.2.1.4	gpu04-ipmi.cluster	gpu04-ipmi
+10.3.1.5	gpu05-ib.cluster	gpu05-ib	gpu05.cluster   gpu05
+10.2.1.5	gpu05-ipmi.cluster	gpu05-ipmi
+10.3.1.6	gpu06-ib.cluster	gpu06-ib	gpu06.cluster   gpu06
+10.2.1.6	gpu06-ipmi.cluster	gpu06-ipmi
+10.3.1.7	gpu07-ib.cluster	gpu07-ib	gpu07.cluster   gpu07
+10.2.1.7	gpu07-ipmi.cluster	gpu07-ipmi
+10.3.1.8	gpu08-ib.cluster	gpu08-ib	gpu08.cluster   gpu08
+10.2.1.8	gpu08-ipmi.cluster	gpu08-ipmi
+10.3.1.9	gpu09-ib.cluster	gpu09-ib	gpu09.cluster   gpu09
+10.2.1.9	gpu09-ipmi.cluster	gpu09-ipmi
+10.3.1.10	gpu10-ib.cluster	gpu10-ib	gpu10.cluster   gpu10
+10.2.1.10	gpu10-ipmi.cluster	gpu10-ipmi
+10.3.1.11	gpu11-ib.cluster	gpu11-ib	gpu11.cluster   gpu11
+10.2.1.11	gpu11-ipmi.cluster	gpu11-ipmi
+10.3.1.12	gpu12-ib.cluster	gpu12-ib	gpu12.cluster   gpu12
+10.2.1.12	gpu12-ipmi.cluster	gpu12-ipmi
+10.3.1.13	gpu13-ib.cluster	gpu13-ib	gpu13.cluster   gpu13
+10.2.1.13	gpu13-ipmi.cluster	gpu13-ipmi
+10.3.1.14	gpu14-ib.cluster	gpu14-ib	gpu14.cluster   gpu14
+10.2.1.14	gpu14-ipmi.cluster	gpu14-ipmi
+10.3.1.15	gpu15-ib.cluster	gpu15-ib	gpu15.cluster   gpu15
+10.2.1.15	gpu15-ipmi.cluster	gpu15-ipmi
+10.3.1.16	gpu16-ib.cluster	gpu16-ib	gpu16.cluster   gpu16
+10.2.1.16	gpu16-ipmi.cluster	gpu16-ipmi
+10.3.1.17	gpu17-ib.cluster	gpu17-ib	gpu17.cluster   gpu17
+10.2.1.17	gpu17-ipmi.cluster	gpu17-ipmi
+10.3.1.18	gpu18-ib.cluster	gpu18-ib	gpu18.cluster   gpu18
+10.2.1.18	gpu18-ipmi.cluster	gpu18-ipmi
+10.3.1.19	gpu19-ib.cluster	gpu19-ib	gpu19.cluster   gpu19
+10.2.1.19	gpu19-ipmi.cluster	gpu19-ipmi
+10.3.1.20	gpu20-ib.cluster	gpu20-ib	gpu20.cluster   gpu20
+10.2.1.20	gpu20-ipmi.cluster	gpu20-ipmi
+10.3.1.254	head-ib.cluster	head-ib
+10.1.1.254	head.cluster	head
+10.2.1.254	head-mgmt.cluster	head-mgmt
+10.2.1.253	head-ipmi.cluster	head-ipmi
+10.3.1.151	lustre01-ib.cluster	lustre01-ib
+10.2.1.151	lustre01-ipmi.cluster	lustre01-ipmi
+10.1.1.151	lustre01.cluster	lustre01
+10.3.1.152	lustre02-ib.cluster	lustre02-ib
+10.2.1.152	lustre02-ipmi.cluster	lustre02-ipmi
+10.1.1.152	lustre02.cluster	lustre02
+10.3.1.153	lustre03-ib.cluster	lustre03-ib
+10.2.1.153	lustre03-ipmi.cluster	lustre03-ipmi
+10.1.1.153	lustre03.cluster	lustre03
+10.3.1.154	lustre04-ib.cluster	lustre04-ib
+10.2.1.154	lustre04-ipmi.cluster	lustre04-ipmi
+10.1.1.154	lustre04.cluster	lustre04
+10.3.1.51	storage01-ib.cluster	storage01-ib	storage01.cluster       storage01
+10.2.1.51	storage01-ipmi.cluster	storage01-ipmi
+10.3.1.52	storage02-ib.cluster	storage02-ib	storage02.cluster       storage02
+10.2.1.52	storage02-ipmi.cluster	storage02-ipmi
+10.3.1.53	storage03-ib.cluster	storage03-ib	storage03.cluster       storage03
+10.2.1.53	storage03-ipmi.cluster	storage03-ipmi
+10.3.1.54	storage04-ib.cluster	storage04-ib	storage04.cluster       storage04
+10.2.1.54	storage04-ipmi.cluster	storage04-ipmi
+10.3.1.55	storage05-ib.cluster	storage05-ib	storage05.cluster       storage05
+10.2.1.55	storage05-ipmi.cluster	storage05-ipmi
+10.3.1.56	storage06-ib.cluster	storage06-ib	storage06.cluster       storage06
+10.2.1.56	storage06-ipmi.cluster	storage06-ipmi
+10.3.1.57	storage07-ib.cluster	storage07-ib	storage07.cluster       storage07
+10.2.1.57	storage07-ipmi.cluster	storage07-ipmi
+10.3.1.58	storage08-ib.cluster	storage08-ib	storage08.cluster       storage08
+10.2.1.58	storage08-ipmi.cluster	storage08-ipmi
+10.3.1.59	storage09-ib.cluster	storage09-ib	storage09.cluster       storage09
+10.2.1.59	storage09-ipmi.cluster	storage09-ipmi
+10.3.1.60	storage10-ib.cluster	storage10-ib	storage10.cluster       storage10
+10.2.1.60	storage10-ipmi.cluster	storage10-ipmi
+10.3.1.61	storage11-ib.cluster	storage11-ib	storage11.cluster       storage11
+10.2.1.61	storage11-ipmi.cluster	storage11-ipmi
+10.3.1.62	storage12-ib.cluster	storage12-ib	storage12.cluster       storage12
+10.2.1.62	storage12-ipmi.cluster	storage12-ipmi
+10.3.1.63	storage13-ib.cluster	storage13-ib	storage13.cluster       storage13
+10.2.1.63	storage13-ipmi.cluster	storage13-ipmi
+10.3.1.64	storage14-ib.cluster	storage14-ib	storage14.cluster       storage14
+10.2.1.64	storage14-ipmi.cluster	storage14-ipmi
+10.3.1.65	storage15-ib.cluster	storage15-ib	storage15.cluster       storage15
+10.2.1.65	storage15-ipmi.cluster	storage15-ipmi
+10.3.1.66	storage16-ib.cluster	storage16-ib	storage16.cluster       storage16
+10.2.1.66	storage16-ipmi.cluster	storage16-ipmi
+10.3.1.67	storage17-ib.cluster	storage17-ib	storage17.cluster       storage17
+10.2.1.67	storage17-ipmi.cluster	storage17-ipmi
+10.3.1.68	storage18-ib.cluster	storage18-ib	storage18.cluster       storage18
+10.2.1.68	storage18-ipmi.cluster	storage18-ipmi
+10.3.1.69	storage19-ib.cluster	storage19-ib	storage19.cluster       storage19
+10.2.1.69	storage19-ipmi.cluster	storage19-ipmi
+10.3.1.70	storage20-ib.cluster	storage20-ib	storage20.cluster       storage20
+10.2.1.70	storage20-ipmi.cluster	storage20-ipmi
+
+
+10.1.1.241	gigabit1	gigabit1.cluster
+10.1.1.242	gigabit2	gigabit2.cluster
+
+10.1.1.240	castle.cluster	castle
+
