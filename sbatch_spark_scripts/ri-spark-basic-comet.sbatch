@@ -473,6 +473,17 @@ execute_all_storm () {
 
 }
 
+execute_all_kafka () {
+
+    let "counts=1"
+    for ip_address in `cat $CONF_BENCHMARK/kafka`; do 
+#        $1
+         ssh -t $ip_address "cd /home/javed.19/git-pull/$counts/streaming-benchmarks; $1"
+        ((counts+=1))
+    done
+
+}
+
 git_update_all (){
     cd ..
     git push
