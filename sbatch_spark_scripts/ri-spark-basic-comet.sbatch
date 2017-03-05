@@ -571,6 +571,9 @@ run() {
   elif [ "reset_all" = "$OPERATION" ];
   then
     reset_all
+  elif [ "execute_all_storm" = "$OPERATION" ];
+  then
+    execute_all_storm "$1"
   elif [ "execute_all_kafka" = "$OPERATION" ];
   then
     execute_all_kafka "$1"

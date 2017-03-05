@@ -9,6 +9,7 @@ eth_bench (){
 
 	cd /home/javed.19/git-pull/finished/streaming-benchmarks/sbatch_spark_scripts
 	./ri-spark-basic-comet.sbatch iptof n
+	ssh -t -t head sudo /sbin/distribute_hosts.sh ~/myhostnames /home/javed.19/git-pull/finished/streaming-benchmarks/sbatch_spark_scripts/host_files/eth_40g
 	./ri-spark-basic-comet.sbatch config_all
 	./ri-spark-basic-comet.sbatch config_all_dir
 	./hadoop-script.sh
@@ -27,7 +28,7 @@ eth_bench (){
 		./ri-spark-basic-comet.sbatch start_spark_cluster
 	elif [[ $framework_name = "storm" ]]; then
 		./ri-spark-basic-comet.sbatch config_storm n
-		./ri-spark-basic-comet.sbatch execute_all "./ri-spark-basic-comet.sbatch config_storm n"
+		./ri-spark-basic-comet.sbatch execute_all "./ri-spark-basic-comet.sbatch config_zk; ./ri-spark-basic-comet.sbatch config_storm n"
 		#    ./ri-spark-basic-comet.sbatch start_storm_cluster n 
 		export STORM_HOME=/var/tmp/apache-storm-1.0.1
 	elif [[ $framework_name = "flink" ]]; then
@@ -35,16 +36,16 @@ eth_bench (){
 		./ri-spark-basic-comet.sbatch start_flink_cluster
 	fi
 	mkdir /var/tmp/hibench-logs
-	log_name="$ntwrk_name"-"$bench_name"-"$framework_name".out
-	./ri-spark-basic-comet.sbatch execute_all "sar -n DEV 2 840 > /var/tmp/hibench-logs/$log_name  &"
+	log_name=$ntwrk_name"-"$bench_name"-"$framework_name".out"
+	./ri-spark-basic-comet.sbatch execute_all "screen -dm bash -c 'sar -n DEV 2 > /var/tmp/hibench-logs/flink-fixwindow-eth.out'"
 
 	cd /home/javed.19/git-pull/finished/HiBench
 	generate_data_benchmark=bin/workloads/streaming/$bench_name/prepare/dataGen.sh
 	start_framework_processing=bin/workloads/streaming/$bench_name/$framework_name/run.sh
 
-	$generate_data_benchmark & 
-	sleep 2
-	$start_framework_processing && fg
+#	$generate_data_benchmark & 
+	#sleep 1
+#	$start_framework_processing && fg
 }
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<IPOIB>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ipoib_bench(){
@@ -54,6 +55,7 @@ ipoib_bench(){
 
 	cd /home/javed.19/git-pull/finished/streaming-benchmarks/sbatch_spark_scripts
 	./ri-spark-basic-comet.sbatch iptof y
+	ssh -t -t head sudo /sbin/distribute_hosts.sh ~/myhostnames /home/javed.19/git-pull/finished/streaming-benchmarks/sbatch_spark_scripts/host_files/ib
 	./ri-spark-basic-comet.sbatch config_all_dir
 	./hadoop-script.sh
 	cd /home/javed.19/git-pull/finished/HiBench
@@ -68,6 +70,7 @@ ipoib_bench(){
 	./ri-spark-basic-comet.sbatch config_spark
 	./hadoop-script.sh config
 	./ri-spark-basic-comet.sbatch config_kafka_dir
+	./ri-spark-basic-comet.sbatch config_zk  
 
 	./ri-spark-basic-comet.sbatch start_kafka_wo_topic ib
 
@@ -77,30 +80,30 @@ ipoib_bench(){
 	if [[ $framework_name = "spark" ]]; then
 		./ri-spark-basic-comet.sbatch start_spark_cluster
 	elif [[ $framework_name = "storm" ]]; then
-		./ri-spark-basic-comet.sbatch config_storm y
+	#	./ri-spark-basic-comet.sbatch config_storm y
 		# ./ri-spark-basic-comet.sbatch start_storm_cluster y
-		./ri-spark-basic-comet.sbatch config_storm y    
-		./ri-spark-basic-comet.sbatch execute_all "./ri-spark-basic-comet.sbatch config_storm y" 
+	./ri-spark-basic-comet.sbatch config_zk
+	./ri-spark-basic-comet.sbatch config_storm y    
+		./ri-spark-basic-comet.sbatch execute_all "./ri-spark-basic-comet.sbatch config_zk;./ri-spark-basic-comet.sbatch config_storm y" 
 		export STORM_HOME=/var/tmp/apache-storm-1.0.1
 	elif [[ $framework_name = "flink" ]]; then
 		./ri-spark-basic-comet.sbatch config_flink y
 		./ri-spark-basic-comet.sbatch start_flink_cluster
 	fi
 
-	mkdir /var/tmp/hibench-logs
-	log_name="$ntwrk_name"-"$bench_name"-"$framework_name".out
-	./ri-spark-basic-comet.sbatch execute_all "sar -n DEV 2 840 > /var/tmp/hibench-logs/$log_name  &"
-
+	mkdir hibench-logs
+	log_name=$ntwrk_name"-"$bench_name"-"$framework_name".out"
+	./ri-spark-basic-comet.sbatch execute_all "screen -dm $log_name -c 'sar -n DEV 2 > hibench-logs/$log_name'"
 
 
 	cd /home/javed.19/git-pull/finished/HiBench
 	generate_data_benchmark=bin/workloads/streaming/$bench_name/prepare/dataGen.sh
 	start_framework_processing=bin/workloads/streaming/$bench_name/$framework_name/run.sh
 
-	$generate_data_benchmark & 
-	sleep 2
-	$start_framework_processing && fg
-	# PID=$!
+#	$generate_data_benchmark & 
+	#sleep 1
+#	$start_framework_processing && fg
+	 $PID=$!
 	# sleep 21m
 
 	# kill $PID

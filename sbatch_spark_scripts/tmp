@@ -1,12 +1,12 @@
-[?1049h[?1h=[1;42r[?12;25h[?12l[?25h[?25l[42;1HE325: ATTENTION
+[?1049h[?1h=[1;43r[?12;25h[?12l[?25h[?25l[43;1HE325: ATTENTION
 Found a swap file by the name "/var/tmp/apache-storm-1.0.1/conf/.storm.yaml.swp"
-          owned by: javed.19   dated: Mon Feb 13 14:38:18 2017
+          owned by: javed.19   dated: Thu Mar  2 16:57:53 2017
          file name: ~javed.19/git-pull/finished/streaming-benchmarks/apache-storm-1.0.1/conf/storm.yaml
           modified: no
          user name: javed.19   host name: head.ri.cse.ohio-state.edu
         process ID: 23910
 While opening file "/var/tmp/apache-storm-1.0.1/conf/storm.yaml"
-             dated: Sun Feb 19 00:31:36 2017
+             dated: Sun Mar  5 15:28:17 2017
       NEWER than swap file!
 
 (1) Another program may be editing the same file.  If this is the case,
@@ -18,8 +18,6 @@ While opening file "/var/tmp/apache-storm-1.0.1/conf/storm.yaml"
     If you did this already, delete the swap file "/var/tmp/apache-storm-1.0.1/conf/.storm.yaml.swp"
     to avoid this message.
 
-"/var/tmp/apache-storm-1.0.1/conf/storm.yaml" "/var/tmp/apache-storm-1.0.1/conf/storm.yaml" 0L, 0C
-Error detected while processing command line:
-E486: Pattern not found: .*storm.zookeeper.servers:\(\n\s*-\s.*\)*
-"/var/tmp/apache-storm-1.0.1/conf/storm.yaml" "/var/tmp/apache-storm-1.0.1/conf/storm.yaml" 0L, 0C written
+"/var/tmp/apache-storm-1.0.1/conf/storm.yaml" "/var/tmp/apache-storm-1.0.1/conf/storm.yaml" 102L, 2510C
+"/var/tmp/apache-storm-1.0.1/conf/storm.yaml" "/var/tmp/apache-storm-1.0.1/conf/storm.yaml" 102L, 2510C written
 [?1l>[?12l[?25h[?1049l
